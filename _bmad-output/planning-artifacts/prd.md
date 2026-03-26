@@ -274,8 +274,8 @@ Not applicable. No public discoverability requirement; no meta tags, structured 
 
 - **FR23:** All interactive elements are operable via keyboard navigation
 - **FR24:** All interactive elements have appropriate accessible names and roles
-- **FR25:** The application renders correctly and remains fully usable on desktop viewports
-- **FR26:** The application renders correctly and remains fully usable on mobile viewports
+- **FR25:** All core interactions (create, edit, complete, delete, view) are accessible and functional on desktop viewports (≥1280px width) with no layout overflow or element truncation
+- **FR26:** All core interactions (create, edit, complete, delete, view) are accessible and functional on mobile viewports (≥375px width) with no layout overflow or element truncation
 - **FR27:** The application meets WCAG 2.1 AA accessibility standards, verified with automated tooling
 
 ### Deployment & Operations
@@ -292,16 +292,16 @@ Not applicable. No public discoverability requirement; no meta tags, structured 
 - **FR34:** The repository enforces conventional commit message format via a pre-commit hook
 - **FR35:** The backend includes unit and integration tests achieving at least 70% meaningful line coverage
 - **FR36:** The test suite includes end-to-end tests covering the full CRUD lifecycle and error recovery scenarios
-- **FR37:** The repository includes documentation sufficient for a developer with no prior context to set up, run, and test the application
+- **FR37:** The repository includes documentation that enables a developer with no prior knowledge of the codebase to set up, run, and execute the full test suite using only the README, as validated by Journey 3 (Developer Deploy) acceptance criteria
 
 ## Non-Functional Requirements
 
 ### Performance
 
-- **NFR1:** The task list renders within 200ms of page load under normal operating conditions (local Docker environment)
-- **NFR2:** Create, toggle, and delete interactions complete within 500ms end-to-end under normal conditions
+- **NFR1:** The task list renders within 200ms of page load under normal operating conditions, as measured by Playwright timing assertions at p95 in the E2E test suite
+- **NFR2:** Create, toggle, and delete interactions complete within 500ms end-to-end, as measured by Playwright timing assertions at p95 in the E2E test suite
 - **NFR3:** The application is reachable and fully functional within 30 seconds of `docker-compose up`
-- **NFR4:** The frontend renders without perceptible jank for lists of up to 100 todo items
+- **NFR4:** A list of 100 todo items renders within 100ms of data receipt with no frame drops below 30fps during scroll, as measurable by the browser performance API
 
 ### Security
 
