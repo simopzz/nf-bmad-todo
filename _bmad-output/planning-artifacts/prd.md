@@ -69,7 +69,7 @@ The PRD itself is a success signal: if the architecture document can be generate
 | Accessibility | WCAG AA — zero critical axe-core violations |
 | Deployability | `docker-compose up` succeeds; all containers healthy; `GET /` responds within 30s |
 | Python formatting | ruff autoformat passes with zero violations |
-| Python type safety | Type hint linting passes with zero errors |
+| Python type safety | ty type checker passes with zero errors |
 | Commit hygiene | Conventional commit enforcement via pre-commit hook; no non-conforming commits in history |
 | Security | No critical OWASP issues (XSS, injection); AI-assisted review findings documented |
 
@@ -101,7 +101,7 @@ All three user journeys must be fully supported at v1 release.
 - Docker Compose — single `docker-compose up`, no external dependencies
 
 **Quality pipeline:**
-- Pre-commit pipeline: ruff, type linting, conventional commits
+- Pre-commit pipeline: ruff, ty (type checking), conventional commits
 - Unit, integration, and E2E test suite (Playwright, ≥5 scenarios)
 - WCAG AA compliance (axe-core verified)
 - README with setup and test instructions
@@ -170,7 +170,7 @@ All three user journeys must be fully supported at v1 release.
 
 **Rising action:** Containers build, start, and report healthy within 30 seconds. Sam navigates to the app in a browser — it loads. Sam creates a todo, refreshes — it persists. Sam runs `docker-compose down` and back up — the todo is still there.
 
-**Climax:** Sam runs the test suite. All unit, integration, and E2E tests pass. Coverage shows ≥70%. Sam triggers the pre-commit hook manually — ruff passes, type checks pass, a deliberately malformed commit message is rejected with a clear conventional commit error.
+**Climax:** Sam runs the test suite. All unit, integration, and E2E tests pass. Coverage shows ≥70%. Sam triggers the pre-commit hook manually — ruff passes, ty type checks pass, a deliberately malformed commit message is rejected with a clear conventional commit error.
 
 **Resolution:** Sam has full confidence the app works as specified. The README was sufficient.
 
@@ -196,7 +196,7 @@ All three user journeys must be fully supported at v1 release.
 | SQLite persistence across container restart | Journey 3 |
 | Single `docker-compose up` deployment | Journey 3 |
 | Health checks on all containers | Journey 3 |
-| Pre-commit pipeline (ruff, type checks, conventional commits) | Journey 3 |
+| Pre-commit pipeline (ruff, ty type checks, conventional commits) | Journey 3 |
 | Documented test commands in README | Journey 3 |
 
 ## Web Application Specific Requirements
@@ -318,7 +318,7 @@ Not applicable. No public discoverability requirement; no meta tags, structured 
 ### Maintainability
 
 - **NFR11:** All Python code conforms to ruff formatting rules; zero violations in CI
-- **NFR12:** All Python functions and methods include type annotations; type checker passes with zero errors
+- **NFR12:** All Python functions and methods include type annotations; `ty` type checker passes with zero errors
 - **NFR13:** All commits conform to the Conventional Commits specification; non-conforming commits are rejected by the pre-commit hook
 - **NFR14:** Backend test coverage is at least 70% meaningful line coverage; coverage report is generated as part of the test run
 - **NFR15:** The codebase can be set up, run, and tested by a developer with no prior context using only the README
