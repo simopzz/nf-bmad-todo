@@ -1,6 +1,6 @@
 # Story 1.1: Repository & Project Scaffold
 
-Status: review
+Status: done
 
 ## Story
 
@@ -45,6 +45,24 @@ so that I have a clean, consistent foundation to build on with no manual setup d
   - [x] Run `npm init playwright@latest` from repository root — **not** inside `todo-frontend/` or `todo-backend/`
   - [x] Confirm `playwright.config.ts` and `e2e/` are at repository root
   - [x] Set `baseURL: 'http://localhost:80'` in `playwright.config.ts` — this is fixed and never changes
+
+### Review Findings
+
+- [x] [Review][Patch] `index.html` has empty `lang=""` attribute — invalid BCP-47, must be `lang="en"` [`todo-frontend/index.html:2`]
+- [x] [Review][Patch] `pytest-asyncio` missing from backend dev deps — async route handlers cannot be tested without it [`todo-backend/pyproject.toml`]
+- [x] [Review][Defer] `e2e/` + `fullyParallel: true` with no tests — CI exits non-zero unless `--pass-with-no-tests` flag is set [`playwright.config.ts`] — deferred, Story 1.2 CI setup concern
+- [x] [Review][Defer] `vueDevTools()` unconditional in `vite.config.ts` — included in production bundles without mode guard [`todo-frontend/vite.config.ts:6`] — deferred, future story concern; scaffold default
+- [x] [Review][Defer] Root `package.json` has empty `scripts` block — no `test:e2e` entry for Playwright [`package.json`] — deferred, out of story scope
+- [x] [Review][Defer] `/app/data/` directory not guaranteed at container start — SQLite `OperationalError` if absent [`.env.example`] — deferred, Story 1.3 Docker/volume setup
+- [x] [Review][Defer] `ALLOWED_ORIGINS` space-separated format not validated — Story 2 CORS implementation concern [`.env.example`] — deferred, pre-existing template value
+
+### Review Findings (Review 2 — 2026-03-30)
+
+- [x] [Review][Patch] `requires-python = ">=3.13"` should be `">=3.12"` per architecture constraint — narrows compatibility unnecessarily [`todo-backend/pyproject.toml:6`]
+- [x] [Review][Defer] `.gitignore` `test/` rule from Vue template may shadow future test directories [`.gitignore:224`] — deferred, generated template artifact
+- [x] [Review][Defer] No root-level `tsconfig.json` governing `playwright.config.ts` — IDE type-checking gap [`playwright.config.ts`] — deferred, not blocking
+- [x] [Review][Defer] Root `package.json` has boilerplate `main: "index.js"` and `directories.doc` referencing non-existent paths [`package.json`] — deferred, npm init artifact
+- [x] [Review][Defer] Root `package.json` `type: "commonjs"` while root-level configs use ESM syntax [`package.json`] — deferred, Playwright handles .ts via own transformer
 
 ## Dev Notes
 
