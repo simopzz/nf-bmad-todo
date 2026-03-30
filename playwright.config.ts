@@ -11,6 +11,9 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+// NOTE: until E2E tests are added in Story 5.1, run Playwright with:
+//   npx playwright test --pass-with-no-tests
+// Without this flag, CI will exit non-zero on an empty test suite.
 export default defineConfig({
   testDir: './e2e',
   /* Run tests in files in parallel */
