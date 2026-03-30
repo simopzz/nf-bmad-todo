@@ -45,7 +45,7 @@ development_status:
   # Epic 1: Project Scaffold & Development Infrastructure
   epic-1: in-progress
   1-1-repository-and-project-scaffold: done
-  1-2-pre-commit-quality-pipeline: backlog
+  1-2-pre-commit-quality-pipeline: done
   1-3-docker-compose-stack-and-health-checks: backlog
   1-4-minimal-readme-and-developer-onboarding: backlog
   epic-1-retrospective: optional
