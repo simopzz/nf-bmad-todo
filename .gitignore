@@ -206,8 +206,11 @@ test/
 # End of https://www.toptal.com/developers/gitignore/api/python,vue,visualstudiocode
 
 .agent/
+.agents/
 .claude/
+.cursor/
 .gemini/
+.github/skills/
 
 ### Project-specific ###
 node_modules/
