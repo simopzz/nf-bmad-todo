@@ -15,12 +15,13 @@ A full-stack todo application: Vue 3 frontend + FastAPI backend, orchestrated wi
 git clone <repo-url>
 cd leapsome-bmad-todo
 
-# 2. Create your local environment file
-[ -f .env ] || cp .env.example .env
+# 2. Create .env and install pre-commit hooks (safe to re-run)
+make setup
+# or manually: [ -f .env ] || cp .env.example .env && pre-commit install
 
 # 3. Start the stack
-docker-compose up
-# or: docker compose up
+make up
+# or: docker-compose up / docker compose up
 
 # 4. Open in browser
 xdg-open http://localhost 2>/dev/null || open http://localhost 2>/dev/null || echo "Open http://localhost in your browser"
@@ -28,12 +29,15 @@ xdg-open http://localhost 2>/dev/null || open http://localhost 2>/dev/null || ec
 
 The application is available at **http://localhost** (port 80).
 
+> Run `make help` to see all available Makefile targets.
+
 ## Development Setup
 
 After cloning, activate the pre-commit hooks:
 
 ```bash
-pre-commit install
+make setup
+# or manually: pre-commit install
 ```
 
 > **Note:** Hooks are NOT active until this command is run. You must run it once per local clone.
@@ -56,16 +60,19 @@ The hooks enforce:
 
 ```bash
 # Stop the stack — data is PRESERVED (volume retained)
-docker-compose down
+make down
+# or: docker-compose down
 
 # Stop the stack and DELETE all data — PERMANENT, cannot be undone
-docker-compose down -v
+make nuke
+# or: docker-compose down -v
 
 # Rebuild images after code changes
-docker-compose up --build
+make build
+# or: docker-compose up --build
 ```
 
-> ⚠️ **Warning:** `docker-compose down -v` **permanently deletes all todo data**. Use with care.
+> ⚠️ **Warning:** `make nuke` / `docker-compose down -v` **permanently deletes all todo data**. Use with care.
 
 ## Environment Variables
 
