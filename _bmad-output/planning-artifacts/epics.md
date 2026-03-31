@@ -269,6 +269,36 @@ So that I can have a working stack without asking anyone for help.
 **And** the README explicitly warns that `docker-compose down -v` permanently deletes all todo data
 **And** the README notes that `.env` is gitignored and must be created from `.env.example`
 **And** the README includes placeholder sections for test commands (to be completed in Epic 5)
+**And** the README references Makefile targets (e.g. `make up`, `make down`) alongside raw commands where applicable, noting that Story 1.5 provides the Makefile
+
+### Story 1.5: Developer Makefile
+
+As a developer,
+I want a Makefile at the repository root that wraps common development commands,
+So that I can operate the stack with short, memorable commands and the README stays lean.
+
+**Acceptance Criteria:**
+
+**Given** I have cloned the repository and have Docker and Make installed
+**When** I run `make help`
+**Then** it prints a list of all available targets with brief descriptions
+**And** `make up` runs `docker compose up` (foreground)
+**And** `make up-d` runs `docker compose up -d` (detached)
+**And** `make down` runs `docker compose down` (preserves data)
+**And** `make nuke` runs `docker compose down -v` and prints a warning that all data has been deleted
+**And** `make build` runs `docker compose up --build`
+**And** `make logs` runs `docker compose logs -f`
+**And** `make setup` runs `cp -n .env.example .env && pre-commit install` — safe to re-run (no overwrite)
+**And** the Makefile uses `.PHONY` for all targets
+**And** each target is a thin wrapper — no custom shell logic beyond the underlying command plus optional `@echo` feedback
+**And** the Makefile includes a header comment noting that future stories will add targets incrementally
+
+**Incremental Growth Convention:**
+Future stories that introduce developer-facing commands SHOULD add a corresponding `make` target. Expected additions:
+- Story 2.5: `make test-backend` → `cd todo-backend && uv run pytest --cov`
+- Story 3.2: `make dev-frontend` → `cd todo-frontend && npm run dev`
+- Story 5.1: `make test-e2e` → `npx playwright test`
+- Story 5.1 or 5.3: `make test-all` → runs all test suites sequentially
 
 ---
 
@@ -650,7 +680,8 @@ So that I can clone, run, and fully verify the application without asking anyone
 
 **Given** I have cloned the repository
 **When** I read only the README and follow its instructions
-**Then** I can run `docker-compose up` and reach the application in a browser (extending the skeleton from Story 1.4)
+**Then** I can run `docker-compose up` (or `make up`) and reach the application in a browser (extending the skeleton from Story 1.4)
+**And** the Makefile contains targets for all developer-facing commands documented in the README — no command appears in the README without a corresponding `make` target
 **And** I can run `pre-commit install` and have all hooks active
 **And** I can run the backend test suite with `pytest --cov` and see the coverage report
 **And** I can run `npx playwright test` and see all E2E tests pass
