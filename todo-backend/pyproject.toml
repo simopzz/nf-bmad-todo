@@ -30,3 +30,6 @@ select = ["E", "F", "I", "UP"]
 
 [tool.ruff.format]
 # inherits line-length from [tool.ruff]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

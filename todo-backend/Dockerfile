@@ -23,9 +23,11 @@ COPY --from=build /build/.venv /app/.venv
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 --start-period=10s \
   CMD python -c "import http.client,sys; c=http.client.HTTPConnection('localhost', 8000, timeout=3); c.request('GET', '/api/v1/health'); r=c.getresponse(); sys.exit(0 if r.status in (200, 404) else 1)"
 
+COPY --chown=appuser:appuser app/ app/
+
 USER appuser
 
 EXPOSE 8000
 
 # Story 2 introduces the FastAPI app module; for Story 1.3 we only need a running process.
-CMD ["python", "-m", "http.server", "8000", "--bind", "0.0.0.0"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
