@@ -54,7 +54,7 @@ development_status:
   # Epic 2: Backend Task API & Data Persistence
   epic-2: in-progress
   2-1-database-models-schemas-and-persistence-layer: done
-  2-2-todo-repository: backlog
+  2-2-todo-repository: done
   2-3-todo-crud-api-endpoints: backlog
   2-4-health-check-endpoint: backlog
   2-5-backend-test-suite: backlog
