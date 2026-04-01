@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_tables
+from app.routers.todos import router as todos_router
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,8 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.include_router(todos_router)
 
     @app.get("/api/v1/health")
     async def health_stub() -> dict[str, str]:

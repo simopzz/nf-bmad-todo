@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-04-01
+last_updated: 2026-04-01T12:40:54.497Z
 project: leapsome-bmad-todo
 project_key: NOKEY
 tracking_system: file-system
@@ -55,7 +55,7 @@ development_status:
   epic-2: in-progress
   2-1-database-models-schemas-and-persistence-layer: done
   2-2-todo-repository: done
-  2-3-todo-crud-api-endpoints: backlog
+  2-3-todo-crud-api-endpoints: done
   2-4-health-check-endpoint: backlog
   2-5-backend-test-suite: backlog
   epic-2-retrospective: optional
