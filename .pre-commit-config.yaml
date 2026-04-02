@@ -1,5 +1,4 @@
 repos:
-  # Ruff: lint (with autofix) + format
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.8  # align with ruff version in pyproject.toml dev deps
     hooks:
@@ -7,11 +6,11 @@ repos:
         args: [--fix]
         types_or: [python, pyi]
         files: ^todo-backend/.*\.py$
+
       - id: ruff-format
         types_or: [python, pyi]
         files: ^todo-backend/.*\.py$
 
-  # ty: type checking — scoped to todo-backend/ only
   - repo: local
     hooks:
       - id: ty
@@ -21,7 +20,20 @@ repos:
         files: ^todo-backend/.*\.py$
         pass_filenames: false
 
-  # Conventional Commits: commit message enforcement
+      - id: frontend-lint
+        name: frontend lint
+        entry: npm --prefix todo-frontend run lint
+        language: system
+        files: ^todo-frontend/
+        pass_filenames: false
+
+      - id: frontend-type-check
+        name: frontend type check
+        entry: npm --prefix todo-frontend run type-check
+        language: system
+        files: ^todo-frontend/
+        pass_filenames: false
+
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.0.0
     hooks:
