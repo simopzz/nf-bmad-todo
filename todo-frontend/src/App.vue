@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTodos } from '@/composables/useTodos'
+import TodoInput from '@/components/todos/TodoInput.vue'
 
 const todoModel = useTodos()
 </script>
@@ -18,9 +19,9 @@ const todoModel = useTodos()
         </p>
       </header>
 
-      <div
-        class="h-24 rounded-xl bg-surface-low transition-colors duration-150 hover:bg-surface-highest"
-        aria-hidden="true"
+      <TodoInput
+        :create-todo="todoModel.createTodo"
+        :todos-empty="!todoModel.loading.value && todoModel.todos.value.length === 0"
       />
     </section>
   </main>
