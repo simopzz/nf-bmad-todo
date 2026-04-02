@@ -5,7 +5,7 @@
 #   Story 5.1 → make test-e2e
 #   Story 5.1/5.3 → make test-all
 
-.PHONY: help up up-d down nuke build logs setup test-backend lint-backend
+.PHONY: help up up-d down nuke build logs setup test-backend lint-backend lint-frontend test-frontend
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -38,3 +38,9 @@ test-backend: ## Run backend test suite with coverage
 
 lint-backend: ## Run ruff format, ruff check, and ty type check on backend
 	cd todo-backend && uv run ruff format --check . && uv run ruff check . && uv run ty check
+
+lint-frontend: ## Run frontend lint, type-check, and build validation
+	npm --prefix todo-frontend run lint && npm --prefix todo-frontend run type-check && npm --prefix todo-frontend run build
+
+test-frontend: ## Run frontend unit tests (single run)
+	npm --prefix todo-frontend run test:unit -- --run
