@@ -40,3 +40,9 @@
 - Hard-coded placeholder text in `App.vue` ("Design system foundation is ready...") — scaffolding prose that should be replaced or removed when Story 3.3+ wire in real content
 - `tailwind.config.js` module may be stale-cached in Vitest watch mode — affects developer experience only, does not impact CI single-run execution
 - Google Fonts loaded without SRI hash — supply-chain risk in principle, but standard practice for CDN-hosted fonts; revisit in security review story (5.2)
+
+## Deferred from: code review of 3-2-api-service-layer-and-use-todos-composable (2026-04-02)
+
+- `TodoListResponse` publicly exported from `types/todo.ts` — violates "internal to api.ts" guardrail; no consumer currently imports it so no active harm, but move to api.ts internals in a follow-up
+- Race condition in concurrent `fetchTodos` calls — no AbortController or sequence guard; stale responses can overwrite newer data; inherent tradeoff of pessimistic-refetch pattern; out of scope for Story 3.2
+- `getErrorMessage({ detail: null })` returns the string `"null"` to users — backend contract returns strings not null but this is a defensive hardening gap; address in a later story

@@ -63,7 +63,7 @@ development_status:
   # Epic 3: Core Frontend Task Management
   epic-3: in-progress
   3-1-design-system-foundation: done
-  3-2-api-service-layer-and-use-todos-composable: backlog
+  3-2-api-service-layer-and-use-todos-composable: done
   3-3-task-input-component: backlog
   3-4-task-checkbox-component: backlog
   3-5-todo-item-component: backlog
