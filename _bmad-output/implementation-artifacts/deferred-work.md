@@ -25,3 +25,11 @@
 - No migration strategy — `create_all` is a no-op on existing schema; future column changes silently skipped; introduce Alembic in a later story
 - `TodoRecord.title` has no DB-level length constraint — `max_length=500` enforced at API layer only; DB-bypass inserts can store unbounded strings
 - `TodoUpdate.field_validator("title")` `if value is not None` guard is dead code — Pydantic v2 skips field validators for `None` on Optional fields; behavior is correct but annotation is misleading
+
+## Deferred from: code review of 2-5-backend-test-suite (2026-04-02)
+
+- `asyncio.sleep(1)` in `test_get_todos_ordered_newest_first` adds 1s delay per run — known workaround for SQLite second-level datetime precision; consider controlled timestamps or ID-based ordering in future
+- No test for PATCH `{}` empty body — `at_least_one_field` validator and `extra="forbid"` untested; out of AC scope but valuable for regression safety
+- Health check 503 path (DB unreachable) entirely untested — AC only requires healthy state; error response shape `{"status": "error", "detail": "..."}` not validated
+- Title boundary tests (1 char min, 500 char max, 501 char rejection) not covered — Pydantic `min_length=1, max_length=500` on `TodoCreate.title` untested at boundaries
+- No test for POST with missing `title` field entirely (`{}` or empty body) — different Pydantic validation path from empty-string test

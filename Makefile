@@ -1,12 +1,11 @@
 # leapsome-bmad-todo Makefile
 # Thin wrappers around docker compose commands.
 # Future stories will add targets incrementally:
-#   Story 2.5 → make test-backend
 #   Story 3.2 → make dev-frontend
 #   Story 5.1 → make test-e2e
 #   Story 5.1/5.3 → make test-all
 
-.PHONY: help up up-d down nuke build logs setup
+.PHONY: help up up-d down nuke build logs setup test-backend lint-backend
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -33,3 +32,9 @@ logs: ## Follow service logs
 setup: ## Create .env from .env.example (safe to re-run) and install pre-commit hooks
 	cp -n .env.example .env
 	pre-commit install
+
+test-backend: ## Run backend test suite with coverage
+	cd todo-backend && uv run pytest --cov=app --cov-report=term-missing --cov-branch
+
+lint-backend: ## Run ruff format, ruff check, and ty type check on backend
+	cd todo-backend && uv run ruff format --check . && uv run ruff check . && uv run ty check
