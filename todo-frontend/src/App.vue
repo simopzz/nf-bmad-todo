@@ -1,47 +1,17 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <main class="min-h-screen bg-surface px-4 py-10 font-body text-primary-container sm:px-6">
+    <section class="mx-auto flex max-w-[640px] flex-col gap-6 rounded-xl bg-surface-lowest p-6">
+      <header class="space-y-2">
+        <h1 class="font-display text-2xl font-semibold tracking-tight">Todo</h1>
+        <p class="text-sm text-primary-container/80">
+          Design system foundation is ready for the upcoming task management stories.
+        </p>
+      </header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
+      <div
+        class="h-24 rounded-xl bg-surface-low transition-colors duration-150 hover:bg-surface-highest"
+        aria-hidden="true"
+      />
+    </section>
   </main>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>

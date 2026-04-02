@@ -33,3 +33,10 @@
 - Health check 503 path (DB unreachable) entirely untested — AC only requires healthy state; error response shape `{"status": "error", "detail": "..."}` not validated
 - Title boundary tests (1 char min, 500 char max, 501 char rejection) not covered — Pydantic `min_length=1, max_length=500` on `TodoCreate.title` untested at boundaries
 - No test for POST with missing `title` field entirely (`{}` or empty body) — different Pydantic validation path from empty-string test
+
+## Deferred from: code review of 3-1-design-system-foundation (2026-04-02)
+
+- `lint-frontend` Makefile target bundles `npm run build` into lint step — semantically unusual but intent is explicit in comment; acceptable for now
+- Hard-coded placeholder text in `App.vue` ("Design system foundation is ready...") — scaffolding prose that should be replaced or removed when Story 3.3+ wire in real content
+- `tailwind.config.js` module may be stale-cached in Vitest watch mode — affects developer experience only, does not impact CI single-run execution
+- Google Fonts loaded without SRI hash — supply-chain risk in principle, but standard practice for CDN-hosted fonts; revisit in security review story (5.2)
