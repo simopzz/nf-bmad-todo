@@ -144,4 +144,117 @@ describe('App integration', () => {
     // First todo is not completed
     expect(titles[0]!.classes()).not.toContain('line-through')
   })
+
+  // --- Loading skeleton ---
+
+  it('shows LoadingSkeleton during initial fetch when no todos exist', async () => {
+    // Keep fetch pending so loading stays true
+    mockGetTodos.mockReturnValue(new Promise(() => {}))
+    const wrapper = mount(App)
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="skeleton-row"]').length).toBeGreaterThanOrEqual(3)
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(false)
+  })
+
+  it('hides skeleton when todos are loaded', async () => {
+    const wrapper = await mountApp()
+    expect(wrapper.find('[data-testid="skeleton-row"]').exists()).toBe(false)
+  })
+
+  it('does not show skeleton during re-fetch when todos already exist', async () => {
+    const wrapper = await mountApp()
+
+    // Simulate re-fetch: getTodos returns a pending promise but todos already loaded
+    mockGetTodos.mockReturnValue(new Promise(() => {}))
+    mockUpdateTodo.mockResolvedValue(undefined)
+
+    const checkbox = wrapper.findAllComponents({ name: 'TaskCheckbox' })[0]!
+    await checkbox.vm.$emit('toggle')
+    await flushPromises()
+
+    // Skeleton should NOT appear — todos are already visible
+    expect(wrapper.find('[data-testid="skeleton-row"]').exists()).toBe(false)
+    // Existing list should remain visible
+    expect(wrapper.findAll('[data-testid="todo-row"]').length).toBeGreaterThan(0)
+  })
+
+  // --- Error state ---
+
+  it('shows AppError when initial fetch fails', async () => {
+    mockGetTodos.mockRejectedValue(new Error('Network failure'))
+    const wrapper = mount(App)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain("Couldn't load your tasks")
+  })
+
+  it('shows AppError when initial fetch fails with an empty-string message', async () => {
+    mockGetTodos.mockRejectedValue(new Error(''))
+    const wrapper = mount(App)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="todo-row"]').exists()).toBe(false)
+  })
+
+  it('has role="status" on load-error container', async () => {
+    mockGetTodos.mockRejectedValue(new Error('Network failure'))
+    const wrapper = mount(App)
+    await flushPromises()
+
+    const errorContainer = wrapper.find('[role="status"]')
+    expect(errorContainer.exists()).toBe(true)
+  })
+
+  it('Retry button calls fetchTodos and recovers on success', async () => {
+    // First fetch fails
+    mockGetTodos.mockRejectedValueOnce(new Error('Network failure'))
+    const wrapper = mount(App)
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(true)
+
+    // Now backend recovers
+    mockGetTodos.mockResolvedValue(sampleTodos)
+
+    const retryBtn = wrapper.find('[data-testid="load-error"] button')
+    await retryBtn.trigger('click')
+    await flushPromises()
+
+    // Error should be gone, list should render
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(false)
+    expect(wrapper.findAll('[data-testid="todo-row"]')).toHaveLength(2)
+  })
+
+  it('keeps existing todos visible when a post-mutation re-fetch fails', async () => {
+    const wrapper = await mountApp()
+
+    mockUpdateTodo.mockResolvedValue(undefined)
+    mockGetTodos.mockRejectedValueOnce(new Error('Re-fetch failed'))
+
+    const checkbox = wrapper.findAllComponents({ name: 'TaskCheckbox' })[0]!
+    await checkbox.vm.$emit('toggle')
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(false)
+    expect(wrapper.findAll('[data-testid="todo-row"]').length).toBeGreaterThan(0)
+  })
+
+  it('does not show error state for mutation failures', async () => {
+    const wrapper = await mountApp()
+
+    // Delete mutation fails
+    mockDeleteTodo.mockRejectedValue(new Error('Delete failed'))
+
+    const deleteBtn = wrapper.find('[data-testid="delete-btn"]')
+    await deleteBtn.trigger('click')
+    await flushPromises()
+
+    // Full-area error should NOT appear
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(false)
+    // Todos should remain visible
+    expect(wrapper.findAll('[data-testid="todo-row"]').length).toBeGreaterThan(0)
+  })
 })
