@@ -211,6 +211,7 @@ test/
 .cursor/
 .gemini/
 .github/skills/
+.github/copilot-instructions.md
 
 ### Project-specific ###
 node_modules/

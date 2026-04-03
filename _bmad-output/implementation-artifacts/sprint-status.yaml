@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-04-02
+last_updated: 2026-04-03
 project: leapsome-bmad-todo
 project_key: NOKEY
 tracking_system: file-system
@@ -65,7 +65,7 @@ development_status:
   3-1-design-system-foundation: done
   3-2-api-service-layer-and-use-todos-composable: done
   3-3-task-input-component: done
-  3-4-task-checkbox-component: backlog
+  3-4-task-checkbox-component: done
   3-5-todo-item-component: backlog
   3-6-todo-list-app-shell-and-end-to-end-happy-path: backlog
   epic-3-retrospective: optional
