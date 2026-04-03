@@ -7,6 +7,7 @@ import type { Todo } from '@/types/todo'
 const props = defineProps<{
   todo: Todo
   isEditing: boolean
+  onCommitEdit?: (id: number, title: string) => Promise<boolean>
 }>()
 
 const emit = defineEmits<{
@@ -42,7 +43,7 @@ function endEditMode() {
   // TODO: focus management -- Story 4.3
 }
 
-function commitEdit() {
+async function commitEdit() {
   const nextTitle = editDraft.value.trim()
   const currentTitle = props.todo.title.trim()
 
@@ -52,6 +53,8 @@ function commitEdit() {
     return
   }
 
+  const committed = (await props.onCommitEdit?.(props.todo.id, nextTitle)) ?? true
+  if (!committed) return
   endEditMode()
 }
 
@@ -59,7 +62,7 @@ function handleEditKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter') {
     event.preventDefault()
     skipBlurCommit.value = true
-    commitEdit()
+    void commitEdit()
   } else if (event.key === 'Escape') {
     editDraft.value = props.todo.title
     endEditMode()
@@ -72,7 +75,7 @@ function handleEditBlur() {
     return
   }
 
-  commitEdit()
+  void commitEdit()
 }
 
 function handleRowFocusIn() {
@@ -113,7 +116,8 @@ function handleRowFocusOut(event: FocusEvent) {
     <span
       v-if="!isEditing"
       data-testid="todo-title"
-      class="flex-1 cursor-pointer py-3 font-body text-sm text-primary-container"
+      class="flex-1 cursor-pointer py-3 font-body text-sm"
+      :class="todo.completed ? 'line-through text-on-surface-variant' : 'text-primary-container'"
       @click="handleTitleClick"
     >
       {{ todo.title }}
