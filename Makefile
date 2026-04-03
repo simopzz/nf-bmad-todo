@@ -1,11 +1,10 @@
 # leapsome-bmad-todo Makefile
 # Thin wrappers around docker compose commands.
 # Future stories will add targets incrementally:
-#   Story 3.2 → make dev-frontend
 #   Story 5.1 → make test-e2e
 #   Story 5.1/5.3 → make test-all
 
-.PHONY: help up up-d down nuke build logs setup test-backend lint-backend lint-frontend test-frontend
+.PHONY: help up up-d down nuke build logs setup test-backend lint-backend lint-frontend test-frontend dev-frontend dev-backend
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -44,3 +43,9 @@ lint-frontend: ## Run frontend lint, type-check, and build validation
 
 test-frontend: ## Run frontend unit tests (single run)
 	npm --prefix todo-frontend run test:unit -- --run
+
+dev-frontend: ## Start Vue dev server locally
+	npm --prefix todo-frontend run dev
+
+dev-backend: ## Start FastAPI dev server locally
+	cd todo-backend && DATABASE_URL=sqlite+aiosqlite:///./todos.db uv run uvicorn app.main:app --reload
