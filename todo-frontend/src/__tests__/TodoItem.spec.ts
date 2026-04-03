@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import TodoItem from '@/components/todos/TodoItem.vue'
 import type { Todo } from '@/types/todo'
@@ -11,11 +11,18 @@ const sampleTodo: Todo = {
   created_at: '2026-04-03T10:00:00Z',
 }
 
-function mountItem(overrides: Partial<{ todo: Todo; isEditing: boolean }> = {}) {
+function mountItem(
+  overrides: Partial<{
+    todo: Todo
+    isEditing: boolean
+    onCommitEdit: (id: number, title: string) => Promise<boolean>
+  }> = {},
+) {
   return mount(TodoItem, {
     props: {
       todo: overrides.todo ?? sampleTodo,
       isEditing: overrides.isEditing ?? false,
+      ...(overrides.onCommitEdit ? { onCommitEdit: overrides.onCommitEdit } : {}),
     },
   })
 }
@@ -195,6 +202,86 @@ describe('components/todos/TodoItem', () => {
   it('applies 150ms transition class on the row', () => {
     const wrapper = mountItem()
     expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('duration-150')
+  })
+
+  // --- Completed-state visual treatment ---
+
+  it('applies line-through and subdued text color when todo is completed', () => {
+    const completedTodo = { ...sampleTodo, completed: true }
+    const wrapper = mountItem({ todo: completedTodo })
+    const title = wrapper.find('[data-testid="todo-title"]')
+    expect(title.classes()).toContain('line-through')
+    expect(title.classes()).toContain('text-on-surface-variant')
+  })
+
+  it('does not apply line-through when todo is not completed', () => {
+    const wrapper = mountItem()
+    const title = wrapper.find('[data-testid="todo-title"]')
+    expect(title.classes()).not.toContain('line-through')
+    expect(title.classes()).not.toContain('text-on-surface-variant')
+  })
+
+  // --- commitEdit callback prop ---
+
+  it('calls onCommitEdit with id and new title on Enter with changed non-empty draft', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(true))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('Updated title')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(onCommitEdit).toHaveBeenCalledWith(sampleTodo.id, 'Updated title')
+  })
+
+  it('calls onCommitEdit on blur with changed non-empty draft', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(true))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('Blur updated')
+    await input.trigger('blur')
+    expect(onCommitEdit).toHaveBeenCalledWith(sampleTodo.id, 'Blur updated')
+  })
+
+  it('does not call onCommitEdit when title is unchanged', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(true))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(onCommitEdit).not.toHaveBeenCalled()
+  })
+
+  it('does not call onCommitEdit on Escape', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(true))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('Changed title')
+    await input.trigger('keydown', { key: 'Escape' })
+    expect(onCommitEdit).not.toHaveBeenCalled()
+  })
+
+  it('does not call onCommitEdit when draft is whitespace-only', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(true))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('   ')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(onCommitEdit).not.toHaveBeenCalled()
+  })
+
+  it('works without onCommitEdit prop (callback is optional)', async () => {
+    const wrapper = mountItem({ isEditing: true })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('Updated title')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('editEnd')).toHaveLength(1)
+  })
+
+  it('keeps edit mode open when onCommitEdit reports commit failure', async () => {
+    const onCommitEdit = vi.fn(async () => Promise.resolve(false))
+    const wrapper = mountItem({ isEditing: true, onCommitEdit })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    await input.setValue('Updated title')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('editEnd')).toBeUndefined()
   })
 
   // --- No API/composable coupling ---
