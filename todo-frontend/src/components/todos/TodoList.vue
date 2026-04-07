@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, reactive, ref } from 'vue'
 
 import TodoItem from '@/components/todos/TodoItem.vue'
 import { getErrorMessage } from '@/services/api'
@@ -13,6 +13,24 @@ const props = defineProps<{
 
 const editingId = ref<number | null>(null)
 const mutationError = ref<string | null>(null)
+const failedRowIds = reactive(new Set<number>())
+const failedRowFlashTimers = new Map<number, ReturnType<typeof setTimeout>>()
+
+function flashFailedRow(id: number) {
+  failedRowIds.add(id)
+
+  const existingTimer = failedRowFlashTimers.get(id)
+  if (existingTimer !== undefined) {
+    clearTimeout(existingTimer)
+  }
+
+  const timer = setTimeout(() => {
+    failedRowIds.delete(id)
+    failedRowFlashTimers.delete(id)
+  }, 1500)
+
+  failedRowFlashTimers.set(id, timer)
+}
 
 function handleEditStart(id: number) {
   editingId.value = id
@@ -28,6 +46,7 @@ async function handleToggleComplete(id: number, completed: boolean) {
     await props.updateTodo(id, { completed })
   } catch (e) {
     mutationError.value = getErrorMessage(e)
+    flashFailedRow(id)
   }
 }
 
@@ -37,6 +56,7 @@ async function handleDelete(id: number) {
     await props.deleteTodo(id)
   } catch (e) {
     mutationError.value = getErrorMessage(e)
+    flashFailedRow(id)
   }
 }
 
@@ -50,6 +70,11 @@ async function handleCommitEdit(id: number, title: string): Promise<boolean> {
     return false
   }
 }
+
+onBeforeUnmount(() => {
+  failedRowFlashTimers.forEach((timer) => clearTimeout(timer))
+  failedRowFlashTimers.clear()
+})
 </script>
 
 <template>
@@ -59,6 +84,7 @@ async function handleCommitEdit(id: number, title: string): Promise<boolean> {
         <TodoItem
           :todo="todo"
           :is-editing="editingId === todo.id"
+          :mutation-failed="failedRowIds.has(todo.id)"
           :on-commit-edit="handleCommitEdit"
           @edit-start="handleEditStart"
           @edit-end="handleEditEnd"

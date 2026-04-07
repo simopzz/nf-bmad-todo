@@ -257,4 +257,18 @@ describe('App integration', () => {
     // Todos should remain visible
     expect(wrapper.findAll('[data-testid="todo-row"]').length).toBeGreaterThan(0)
   })
+
+  it('keeps full-area AppError hidden when create mutation fails', async () => {
+    const wrapper = await mountApp()
+    mockCreateTodo.mockRejectedValue(new Error('Create failed'))
+
+    const input = wrapper.find('input[aria-label="Add a task"]')
+    await input.setValue('Create me')
+    await input.trigger('keydown', { key: 'Enter' })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="load-error"]').exists()).toBe(false)
+    expect(wrapper.findAll('[data-testid="todo-row"]').length).toBeGreaterThan(0)
+    expect(wrapper.find('[role="alert"]').text()).toContain('Create failed')
+  })
 })
