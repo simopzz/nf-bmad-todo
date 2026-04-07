@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 import TaskCheckbox from '@/components/todos/TaskCheckbox.vue'
 import type { Todo } from '@/types/todo'
@@ -7,6 +7,7 @@ import type { Todo } from '@/types/todo'
 const props = defineProps<{
   todo: Todo
   isEditing: boolean
+  mutationFailed?: boolean
   onCommitEdit?: (id: number, title: string) => Promise<boolean>
 }>()
 
@@ -21,7 +22,23 @@ const isHovered = ref(false)
 const isFocusWithin = ref(false)
 const skipBlurCommit = ref(false)
 const editDraft = ref(props.todo.title)
+const editMutationFailed = ref(false)
 const isActionVisible = computed(() => isHovered.value || isFocusWithin.value)
+const hasMutationFailed = computed(
+  () => props.mutationFailed === true || editMutationFailed.value,
+)
+let editMutationFlashTimer: ReturnType<typeof setTimeout> | null = null
+
+function scheduleEditMutationFlashReset() {
+  if (editMutationFlashTimer !== null) {
+    clearTimeout(editMutationFlashTimer)
+  }
+
+  editMutationFlashTimer = setTimeout(() => {
+    editMutationFailed.value = false
+    editMutationFlashTimer = null
+  }, 1500)
+}
 
 // Reset draft each time we enter edit mode
 watch(
@@ -53,8 +70,21 @@ async function commitEdit() {
     return
   }
 
-  const committed = (await props.onCommitEdit?.(props.todo.id, nextTitle)) ?? true
-  if (!committed) return
+  let committed = true
+  try {
+    committed = (await props.onCommitEdit?.(props.todo.id, nextTitle)) ?? true
+  } catch {
+    committed = false
+  }
+
+  if (!committed) {
+    editDraft.value = props.todo.title
+    editMutationFailed.value = true
+    scheduleEditMutationFlashReset()
+    endEditMode()
+    return
+  }
+
   endEditMode()
 }
 
@@ -95,13 +125,22 @@ function handleRowFocusOut(event: FocusEvent) {
 
   isFocusWithin.value = false
 }
+
+onBeforeUnmount(() => {
+  if (editMutationFlashTimer !== null) {
+    clearTimeout(editMutationFlashTimer)
+  }
+})
 </script>
 
 <template>
   <div
     data-testid="todo-row"
-    class="flex items-center rounded-lg px-2 transition-colors duration-150 ease-in-out"
-    :class="isActionVisible ? 'bg-surface-highest' : 'bg-transparent'"
+    class="flex items-center rounded-lg border-[1px] px-2 transition-colors duration-150 ease-in-out"
+    :class="[
+      isActionVisible ? 'bg-surface-highest' : 'bg-transparent',
+      hasMutationFailed ? 'border-outline-variant' : 'border-transparent',
+    ]"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
     @focusin="handleRowFocusIn"

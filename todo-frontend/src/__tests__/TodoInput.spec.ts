@@ -41,6 +41,19 @@ describe('components/todos/TodoInput', () => {
     await nextTick()
 
     expect(createTodoMock).not.toHaveBeenCalled()
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  })
+
+  it('does NOT call createTodo on Enter with whitespace-only input and shows no error', async () => {
+    const wrapper = mountInput()
+    const input = wrapper.find('input')
+
+    await input.setValue('   ')
+    await input.trigger('keydown', { key: 'Enter' })
+    await nextTick()
+
+    expect(createTodoMock).not.toHaveBeenCalled()
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
   })
 
   it('clears input on Escape without calling createTodo', async () => {
@@ -105,6 +118,23 @@ describe('components/todos/TodoInput', () => {
 
     expect(wrapper.find('[role="alert"]').text()).toBe('Network error')
     expect((input.element as HTMLInputElement).value).toBe('My task')
+  })
+
+  it('displays backend detail message for 422-like errors and preserves input text', async () => {
+    createTodoMock.mockRejectedValueOnce({ detail: 'Title must not be blank' })
+    const wrapper = mountInput()
+    const input = wrapper.find('input')
+
+    await input.setValue('Task title')
+    await input.trigger('keydown', { key: 'Enter' })
+
+    await vi.waitFor(() => {
+      expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+    })
+
+    expect(createTodoMock).toHaveBeenCalledWith('Task title')
+    expect(wrapper.find('[role="alert"]').text()).toBe('Title must not be blank')
+    expect((input.element as HTMLInputElement).value).toBe('Task title')
   })
 
   it('retains focus after successful submit', async () => {

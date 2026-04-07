@@ -133,25 +133,91 @@ describe('components/todos/TodoList', () => {
   })
 
   it('shows mutation error when toggleComplete update fails', async () => {
-    const updateTodo = vi.fn(async () => Promise.reject(new Error('Cannot update todo')))
-    const wrapper = mountList({ updateTodo })
-    const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
-    await firstItem.vm.$emit('toggleComplete', 1, true)
-    await flushPromises()
-    const error = wrapper.find('[role="alert"]')
-    expect(error.exists()).toBe(true)
-    expect(error.text()).toContain('Cannot update todo')
+    vi.useFakeTimers()
+    try {
+      const updateTodo = vi.fn(async () => Promise.reject(new Error('Cannot update todo')))
+      const wrapper = mountList({ updateTodo })
+      const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
+
+      await firstItem.vm.$emit('toggleComplete', 1, true)
+      await flushPromises()
+
+      const error = wrapper.find('[role="alert"]')
+      expect(error.exists()).toBe(true)
+      expect(error.text()).toContain('Cannot update todo')
+
+      const rows = wrapper.findAll('[data-testid="todo-row"]')
+      expect(rows[0]!.classes()).toContain('border-outline-variant')
+      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+
+      vi.advanceTimersByTime(1500)
+      await flushPromises()
+
+      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('shows mutation error when delete fails', async () => {
-    const deleteTodo = vi.fn(async () => Promise.reject(new Error('Cannot delete todo')))
-    const wrapper = mountList({ deleteTodo })
-    const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
-    await firstItem.vm.$emit('delete', 1)
-    await flushPromises()
-    const error = wrapper.find('[role="alert"]')
-    expect(error.exists()).toBe(true)
-    expect(error.text()).toContain('Cannot delete todo')
+    vi.useFakeTimers()
+    try {
+      const deleteTodo = vi.fn(async () => Promise.reject(new Error('Cannot delete todo')))
+      const wrapper = mountList({ deleteTodo })
+      const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
+
+      await firstItem.vm.$emit('delete', 1)
+      await flushPromises()
+
+      const error = wrapper.find('[role="alert"]')
+      expect(error.exists()).toBe(true)
+      expect(error.text()).toContain('Cannot delete todo')
+
+      const rows = wrapper.findAll('[data-testid="todo-row"]')
+      expect(rows[0]!.classes()).toContain('border-outline-variant')
+      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+
+      vi.advanceTimersByTime(1500)
+      await flushPromises()
+
+      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps flashes on multiple failed rows when failures overlap in time', async () => {
+    vi.useFakeTimers()
+    try {
+      const updateTodo = vi.fn(async () => Promise.reject(new Error('Cannot update todo')))
+      const wrapper = mountList({ updateTodo })
+      const items = wrapper.findAllComponents({ name: 'TodoItem' })
+
+      await items[0]!.vm.$emit('toggleComplete', 1, true)
+      await flushPromises()
+
+      vi.advanceTimersByTime(300)
+
+      await items[1]!.vm.$emit('toggleComplete', 2, true)
+      await flushPromises()
+
+      const rows = wrapper.findAll('[data-testid="todo-row"]')
+      expect(rows[0]!.classes()).toContain('border-outline-variant')
+      expect(rows[1]!.classes()).toContain('border-outline-variant')
+
+      vi.advanceTimersByTime(1200)
+      await flushPromises()
+
+      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[1]!.classes()).toContain('border-outline-variant')
+
+      vi.advanceTimersByTime(300)
+      await flushPromises()
+
+      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('returns false from commitEdit callback when update fails', async () => {

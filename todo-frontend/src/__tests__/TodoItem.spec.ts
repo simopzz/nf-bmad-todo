@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
 import TodoItem from '@/components/todos/TodoItem.vue'
@@ -15,6 +15,7 @@ function mountItem(
   overrides: Partial<{
     todo: Todo
     isEditing: boolean
+    mutationFailed: boolean
     onCommitEdit: (id: number, title: string) => Promise<boolean>
   }> = {},
 ) {
@@ -22,6 +23,7 @@ function mountItem(
     props: {
       todo: overrides.todo ?? sampleTodo,
       isEditing: overrides.isEditing ?? false,
+      mutationFailed: overrides.mutationFailed ?? false,
       ...(overrides.onCommitEdit ? { onCommitEdit: overrides.onCommitEdit } : {}),
     },
   })
@@ -204,6 +206,11 @@ describe('components/todos/TodoItem', () => {
     expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('duration-150')
   })
 
+  it('applies border-outline-variant when mutationFailed prop is true', () => {
+    const wrapper = mountItem({ mutationFailed: true })
+    expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+  })
+
   // --- Completed-state visual treatment ---
 
   it('applies line-through and subdued text color when todo is completed', () => {
@@ -275,13 +282,60 @@ describe('components/todos/TodoItem', () => {
     expect(wrapper.emitted('editEnd')).toHaveLength(1)
   })
 
-  it('keeps edit mode open when onCommitEdit reports commit failure', async () => {
-    const onCommitEdit = vi.fn(async () => Promise.resolve(false))
-    const wrapper = mountItem({ isEditing: true, onCommitEdit })
-    const input = wrapper.find('[data-testid="edit-input"]')
-    await input.setValue('Updated title')
-    await input.trigger('keydown', { key: 'Enter' })
-    expect(wrapper.emitted('editEnd')).toBeUndefined()
+  it('reverts title, exits edit mode, and flashes border on commit failure', async () => {
+    vi.useFakeTimers()
+    try {
+      const onCommitEdit = vi.fn(async () => Promise.resolve(false))
+      const wrapper = mountItem({ isEditing: true, onCommitEdit })
+      const input = wrapper.find('[data-testid="edit-input"]')
+
+      await input.setValue('Updated title')
+      await input.trigger('keydown', { key: 'Enter' })
+      await flushPromises()
+
+      expect(wrapper.emitted('editEnd')).toHaveLength(1)
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+
+      await wrapper.setProps({ isEditing: false })
+      await wrapper.setProps({ isEditing: true })
+      const reopenedInput = wrapper.find<HTMLInputElement>('[data-testid="edit-input"]')
+      expect(reopenedInput.element.value).toBe(sampleTodo.title)
+
+      vi.advanceTimersByTime(1500)
+      await flushPromises()
+
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('border-outline-variant')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('treats rejected onCommitEdit as a mutation failure and flashes border', async () => {
+    vi.useFakeTimers()
+    try {
+      const onCommitEdit = vi.fn(async () => Promise.reject(new Error('Network failure')))
+      const wrapper = mountItem({ isEditing: true, onCommitEdit })
+      const input = wrapper.find('[data-testid="edit-input"]')
+
+      await input.setValue('Updated title')
+      await input.trigger('keydown', { key: 'Enter' })
+      await flushPromises()
+
+      expect(wrapper.emitted('editEnd')).toHaveLength(1)
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+
+      await wrapper.setProps({ isEditing: false })
+      await wrapper.setProps({ isEditing: true })
+      const reopenedInput = wrapper.find<HTMLInputElement>('[data-testid="edit-input"]')
+      expect(reopenedInput.element.value).toBe(sampleTodo.title)
+
+      vi.advanceTimersByTime(1500)
+      await flushPromises()
+
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('border-outline-variant')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   // --- No API/composable coupling ---
