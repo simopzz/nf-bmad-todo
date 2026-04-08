@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import TaskCheckbox from '@/components/todos/TaskCheckbox.vue'
 import type { Todo } from '@/types/todo'
@@ -18,6 +18,8 @@ const emit = defineEmits<{
   delete: [id: number]
 }>()
 
+const inputRef = ref<HTMLInputElement | null>(null)
+const rowRef = ref<HTMLElement | null>(null)
 const isHovered = ref(false)
 const isFocusWithin = ref(false)
 const skipBlurCommit = ref(false)
@@ -40,24 +42,25 @@ function scheduleEditMutationFlashReset() {
   }, 1500)
 }
 
-// Reset draft each time we enter edit mode
+// Reset draft each time we enter edit mode; also focus the edit input
 watch(
   () => props.isEditing,
   (editing) => {
     if (editing) {
       editDraft.value = props.todo.title
+      nextTick(() => inputRef.value?.focus())
     }
   },
 )
 
 function handleTitleClick() {
-  // TODO: focus management -- Story 4.3
   emit('editStart', props.todo.id)
+  // focus management happens in the watch above, after isEditing prop updates
 }
 
 function endEditMode() {
   emit('editEnd')
-  // TODO: focus management -- Story 4.3
+  nextTick(() => rowRef.value?.focus())
 }
 
 async function commitEdit() {
@@ -135,8 +138,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div
+    ref="rowRef"
+    tabindex="-1"
     data-testid="todo-row"
-    class="flex items-center rounded-lg border-[1px] px-2 transition-colors duration-150 ease-in-out"
+    class="flex items-center rounded-lg border-[1px] px-2 transition-colors duration-150 ease-in-out focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1"
     :class="[
       isActionVisible ? 'bg-surface-highest' : 'bg-transparent',
       hasMutationFailed ? 'border-outline-variant' : 'border-transparent',
@@ -154,16 +159,19 @@ onBeforeUnmount(() => {
     <!-- Title display mode -->
     <span
       v-if="!isEditing"
+      tabindex="0"
       data-testid="todo-title"
-      class="flex-1 cursor-pointer py-3 font-body text-sm"
+      class="flex-1 cursor-pointer py-3 font-body text-sm focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:rounded-sm"
       :class="todo.completed ? 'line-through text-on-surface-variant' : 'text-primary-container'"
       @click="handleTitleClick"
+      @keydown.enter.prevent="handleTitleClick"
     >
       {{ todo.title }}
     </span>
 
     <!-- Inline edit mode -->
     <input
+      ref="inputRef"
       v-else
       v-model="editDraft"
       data-testid="edit-input"
@@ -179,7 +187,7 @@ onBeforeUnmount(() => {
       type="button"
       data-testid="delete-btn"
       aria-label="Delete task"
-      class="ml-2 flex items-center justify-center p-2 transition-opacity duration-150 ease-in-out"
+      class="ml-2 flex items-center justify-center p-2 transition-opacity duration-150 ease-in-out focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:rounded-sm"
       :class="isActionVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
       :tabindex="isActionVisible ? 0 : -1"
       @click="emit('delete', todo.id)"

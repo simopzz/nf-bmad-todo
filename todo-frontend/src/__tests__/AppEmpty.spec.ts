@@ -58,4 +58,9 @@ describe('components/todos/AppEmpty', () => {
     const wrapper = mountEmpty('blank')
     expect(wrapper.find('[data-testid="empty-container"]').classes()).toContain('text-center')
   })
+
+  it('has role="status" on the container for screen reader announcements', () => {
+    const wrapper = mountEmpty('blank')
+    expect(wrapper.find('[data-testid="empty-container"]').attributes('role')).toBe('status')
+  })
 })

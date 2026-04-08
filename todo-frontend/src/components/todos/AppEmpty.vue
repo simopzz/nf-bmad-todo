@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <div data-testid="empty-container" class="flex flex-col items-center py-12 text-center">
+  <div role="status" data-testid="empty-container" class="flex flex-col items-center py-12 text-center">
     <template v-if="variant === 'blank'">
       <span data-testid="empty-icon" class="mb-4 text-4xl" aria-hidden="true">&#10022;</span>
       <h2 data-testid="empty-headline" class="font-display text-lg font-semibold text-primary-container">
