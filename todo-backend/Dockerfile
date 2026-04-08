@@ -30,4 +30,4 @@ USER appuser
 EXPOSE 8000
 
 # Story 2 introduces the FastAPI app module; for Story 1.3 we only need a running process.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]

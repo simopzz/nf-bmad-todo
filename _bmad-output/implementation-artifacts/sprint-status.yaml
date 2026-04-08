@@ -71,11 +71,11 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Resilient UX, Accessibility & Responsive Design
-  epic-4: in-progress
+  epic-4: done
   4-1-loading-skeleton-and-full-area-error-state: done
   4-2-form-validation-and-mutation-error-handling: done
   4-3-keyboard-navigation-and-screen-reader-support: done
-  4-4-responsive-design-and-wcag-aa-audit: backlog
+  4-4-responsive-design-and-wcag-aa-audit: done
   epic-4-retrospective: optional
 
   # Epic 5: End-to-End Quality Assurance & Documentation

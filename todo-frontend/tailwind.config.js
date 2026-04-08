@@ -14,6 +14,8 @@ export default {
         'surface-lowest': '#FFFFFF',
         'surface-highest': '#E2E8F0',
         'outline-variant': '#64748B',
+        'on-surface': '#1E293B',
+        'on-surface-variant': '#64748B',
       },
       fontFamily: {
         display: ['Plus Jakarta Sans', 'sans-serif'],
