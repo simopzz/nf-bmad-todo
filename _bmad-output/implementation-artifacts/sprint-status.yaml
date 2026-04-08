@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-04-08
+last_updated: 2026-04-09
 project: leapsome-bmad-todo
 project_key: NOKEY
 tracking_system: file-system
@@ -79,8 +79,8 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: End-to-End Quality Assurance & Documentation
-  epic-5: backlog
-  5-1-playwright-end-to-end-test-suite: backlog
+  epic-5: in-progress
+  5-1-playwright-end-to-end-test-suite: done
   5-2-ai-assisted-security-review: backlog
   5-3-full-readme-and-documentation-completion: backlog
   5-4-ai-integration-log: backlog

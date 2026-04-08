@@ -96,7 +96,10 @@ cd todo-backend && uv run pytest
 cd todo-frontend && npm run test:unit
 
 # E2E tests (Playwright — requires running stack)
-# Setup coming in Epic 5
+make test-e2e
+
+# Run all test suites (backend + frontend + e2e)
+make test-all
 ```
 
 ## API Documentation
