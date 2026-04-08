@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 import TodoItem from '@/components/todos/TodoItem.vue'
 import type { Todo } from '@/types/todo'
@@ -206,6 +207,14 @@ describe('components/todos/TodoItem', () => {
     expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('duration-150')
   })
 
+  it('applies visible focus ring classes on the row', () => {
+    const wrapper = mountItem()
+    const row = wrapper.find('[data-testid="todo-row"]')
+    expect(row.classes()).toContain('focus-visible:ring-2')
+    expect(row.classes()).toContain('focus-visible:ring-secondary')
+    expect(row.classes()).toContain('focus-visible:ring-offset-1')
+  })
+
   it('applies border-outline-variant when mutationFailed prop is true', () => {
     const wrapper = mountItem({ mutationFailed: true })
     expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
@@ -336,6 +345,47 @@ describe('components/todos/TodoItem', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  // --- Focus management (AC: 1, 5, 6) ---
+
+  it('focuses edit input when isEditing transitions to true', async () => {
+    const wrapper = mount(TodoItem, {
+      attachTo: document.body,
+      props: { todo: sampleTodo, isEditing: false },
+    })
+    await wrapper.setProps({ isEditing: true })
+    await nextTick()
+    expect(document.activeElement).toBe(wrapper.find('[data-testid="edit-input"]').element)
+    wrapper.unmount()
+  })
+
+  it('returns focus to row on Escape', async () => {
+    const wrapper = mount(TodoItem, {
+      attachTo: document.body,
+      props: { todo: sampleTodo, isEditing: true },
+    })
+    await wrapper.find('[data-testid="edit-input"]').trigger('keydown', { key: 'Escape' })
+    await nextTick()
+    expect(document.activeElement).toBe(wrapper.find('[data-testid="todo-row"]').element)
+    wrapper.unmount()
+  })
+
+  it('title span has tabindex="0"', () => {
+    const wrapper = mountItem()
+    expect(wrapper.find('[data-testid="todo-title"]').attributes('tabindex')).toBe('0')
+  })
+
+  it('Enter on title span emits editStart', async () => {
+    const wrapper = mountItem()
+    await wrapper.find('[data-testid="todo-title"]').trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('editStart')).toHaveLength(1)
+    expect(wrapper.emitted('editStart')![0]).toEqual([sampleTodo.id])
+  })
+
+  it('row div has tabindex="-1" for programmatic focus', () => {
+    const wrapper = mountItem()
+    expect(wrapper.find('[data-testid="todo-row"]').attributes('tabindex')).toBe('-1')
   })
 
   // --- No API/composable coupling ---

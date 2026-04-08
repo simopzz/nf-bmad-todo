@@ -12,44 +12,45 @@ describe('components/todos/TaskCheckbox', () => {
     })
   }
 
-  it('emits toggle on click', async () => {
+  it('renders a native <input type="checkbox">', () => {
     const wrapper = mountCheckbox()
-    await wrapper.find('button').trigger('click')
+    expect(wrapper.find('input[type="checkbox"]').exists()).toBe(true)
+  })
+
+  it('emits toggle on change event', async () => {
+    const wrapper = mountCheckbox()
+    await wrapper.find('input[type="checkbox"]').trigger('change')
     expect(wrapper.emitted('toggle')).toHaveLength(1)
   })
 
-  it('emits toggle on Space key', async () => {
+  it('emits toggle on Enter keydown', async () => {
     const wrapper = mountCheckbox()
-    await wrapper.find('button').trigger('keydown', { key: ' ' })
+    await wrapper.find('input[type="checkbox"]').trigger('keydown', { key: 'Enter' })
     expect(wrapper.emitted('toggle')).toHaveLength(1)
   })
 
-  it('does not emit repeatedly while Space key is held', async () => {
-    const wrapper = mountCheckbox()
-    const button = wrapper.find('button')
-
-    await button.trigger('keydown', { key: ' ', repeat: false })
-    await button.trigger('keydown', { key: ' ', repeat: true })
-
-    expect(wrapper.emitted('toggle')).toHaveLength(1)
-  })
-
-  it('has aria-checked="true" and filled state when completed', () => {
+  it('input is checked when completed is true', () => {
     const wrapper = mountCheckbox({ completed: true })
-    const button = wrapper.find('button')
-    const inner = wrapper.find('span')
+    const input = wrapper.find<HTMLInputElement>('input[type="checkbox"]')
+    expect(input.element.checked).toBe(true)
+  })
 
-    expect(button.attributes('aria-checked')).toBe('true')
+  it('input is not checked when completed is false', () => {
+    const wrapper = mountCheckbox({ completed: false })
+    const input = wrapper.find<HTMLInputElement>('input[type="checkbox"]')
+    expect(input.element.checked).toBe(false)
+  })
+
+  it('has filled state when completed', () => {
+    const wrapper = mountCheckbox({ completed: true })
+    const inner = wrapper.find('span')
     expect(inner.classes()).toContain('bg-secondary')
     expect(inner.classes()).toContain('border-secondary')
   })
 
-  it('has aria-checked="false" and unfilled state when not completed', () => {
+  it('has unfilled state when not completed', () => {
     const wrapper = mountCheckbox({ completed: false })
-    const button = wrapper.find('button')
     const inner = wrapper.find('span')
-
-    expect(button.attributes('aria-checked')).toBe('false')
     expect(inner.classes()).toContain('border-outline-variant')
     expect(inner.classes()).toContain('bg-transparent')
   })
@@ -57,16 +58,14 @@ describe('components/todos/TaskCheckbox', () => {
   it('has hover styling class on inner span', () => {
     const wrapper = mountCheckbox()
     const inner = wrapper.find('span')
-
     expect(inner.classes()).toContain('group-hover:border-primary-container')
   })
 
   it('has 44x44px touch target via padding', () => {
     const wrapper = mountCheckbox()
-    const button = wrapper.find('button')
+    const label = wrapper.find('label')
     const inner = wrapper.find('span')
-
-    expect(button.classes()).toContain('p-[13px]')
+    expect(label.classes()).toContain('p-[13px]')
     expect(inner.classes()).toContain('h-[18px]')
     expect(inner.classes()).toContain('w-[18px]')
   })
@@ -85,11 +84,6 @@ describe('components/todos/TaskCheckbox', () => {
     expect(uncheckedIcon.classes()).toContain('scale-75')
   })
 
-  it('has role="checkbox" on button', () => {
-    const wrapper = mountCheckbox()
-    expect(wrapper.find('button').attributes('role')).toBe('checkbox')
-  })
-
   it('applies transition classes for animation', () => {
     const wrapper = mountCheckbox()
     const inner = wrapper.find('span')
@@ -101,5 +95,17 @@ describe('components/todos/TaskCheckbox', () => {
     expect(icon.classes()).toContain('transition-all')
     expect(icon.classes()).toContain('duration-150')
     expect(icon.classes()).toContain('ease-in-out')
+  })
+
+  it('native input is visually hidden with sr-only', () => {
+    const wrapper = mountCheckbox()
+    const input = wrapper.find('input[type="checkbox"]')
+    expect(input.classes()).toContain('sr-only')
+  })
+
+  it('native input has an accessible name', () => {
+    const wrapper = mountCheckbox()
+    const input = wrapper.find('input[type="checkbox"]')
+    expect(input.attributes('aria-label')).toBe('Toggle task completion')
   })
 })
