@@ -79,7 +79,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="space-y-2">
-    <ul aria-live="polite" class="space-y-6">
+    <ul aria-live="polite" class="space-y-6" style="padding-bottom: env(safe-area-inset-bottom, 0px)">
       <li v-for="todo in todos" :key="todo.id">
         <TodoItem
           :todo="todo"
