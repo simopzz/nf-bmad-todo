@@ -47,6 +47,10 @@
 - Race condition in concurrent `fetchTodos` calls — no AbortController or sequence guard; stale responses can overwrite newer data; inherent tradeoff of pessimistic-refetch pattern; out of scope for Story 3.2
 - `getErrorMessage({ detail: null })` returns the string `"null"` to users — backend contract returns strings not null but this is a defensive hardening gap; address in a later story
 
+## Deferred from: code review of 5-3-full-readme-and-documentation-completion (2026-04-09)
+
+- Non-conforming commit history (AC8) — multiple commits in repository history do not follow Conventional Commits format (e.g., `code review`, `Story 1.1: ...`, `bmad prd`); requires policy decision on history rewrite vs accepted constraint before AC8 can be marked met.
+
 ## Deferred from: code review of 5-2-ai-assisted-security-review (2026-04-09)
 
 - Backend test coverage at 73% not cross-referenced against security-relevant code paths — pre-existing quality gap; specific uncovered branches in reviewed files not mapped to security impact
