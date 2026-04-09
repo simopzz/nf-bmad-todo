@@ -4,9 +4,14 @@ A full-stack todo application: Vue 3 frontend + FastAPI backend, orchestrated wi
 
 ## Prerequisites
 
+**To run the application:**
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) (v2+)
-- [Node.js](https://nodejs.org/) >= 18 (for local frontend development)
-- Python 3.12+ (for local backend development)
+- [GNU Make](https://www.gnu.org/software/make/) (standard on Linux/macOS; on Windows use WSL or Git Bash)
+
+**To contribute / develop:**
+- [Node.js](https://nodejs.org/) >= 18 (Playwright browser install via `make setup`; frontend development)
+- [pre-commit](https://pre-commit.com/#install) (git hooks via `make setup`)
+- Python 3.12+ (backend development)
 
 ## Quick Start
 
@@ -15,13 +20,11 @@ A full-stack todo application: Vue 3 frontend + FastAPI backend, orchestrated wi
 git clone <repo-url>
 cd leapsome-bmad-todo
 
-# 2. Create .env and install pre-commit hooks (safe to re-run)
+# 2. Create .env, install pre-commit hooks, and install Playwright browsers (safe to re-run)
 make setup
-# or manually: [ -f .env ] || cp .env.example .env && pre-commit install
 
 # 3. Start the stack
 make up
-# or: docker-compose up / docker compose up
 
 # 4. Open in browser
 xdg-open http://localhost 2>/dev/null || open http://localhost 2>/dev/null || echo "Open http://localhost in your browser"
@@ -33,7 +36,7 @@ The application is available at **http://localhost** (port 80).
 
 ## Development Setup
 
-After cloning, activate the pre-commit hooks:
+Run this once per clone:
 
 ```bash
 make setup
@@ -61,18 +64,15 @@ The hooks enforce:
 ```bash
 # Stop the stack — data is PRESERVED (volume retained)
 make down
-# or: docker-compose down
 
 # Stop the stack and DELETE all data — PERMANENT, cannot be undone
 make nuke
-# or: docker-compose down -v
 
 # Rebuild images after code changes
 make build
-# or: docker-compose up --build
 ```
 
-> ⚠️ **Warning:** `make nuke` / `docker-compose down -v` **permanently deletes all todo data**. Use with care.
+> ⚠️ **Warning:** `make nuke` (`docker compose down -v`) **permanently deletes all todo data**. Use with care.
 
 ## Environment Variables
 
@@ -80,20 +80,18 @@ Copy `.env.example` to `.env` before starting. The `.env` file is gitignored and
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | SQLite connection string (e.g. `sqlite+aiosqlite:////app/data/todos.db`) |
-| `ALLOWED_ORIGINS` | Space-separated CORS origins for production |
-| `ENABLE_DOCS` | Set to `true` to enable FastAPI Swagger UI at `/docs` |
+| `DATABASE_URL` | SQLite connection string used by the backend. Docker default: `sqlite+aiosqlite:////app/data/todos.db` (persists in `db-data` volume). Local dev override: `sqlite+aiosqlite:///./todos.db`. |
+| `ALLOWED_ORIGINS` | Space-separated allowlist for production CORS origins. Do not use `*` when credentials are enabled. |
+| `ENABLE_DOCS` | `true` enables FastAPI Swagger UI at `/docs`; set `false` (or unset) for production-style runs. |
 
 ## Testing
 
-> **Placeholder** — Test suite is being expanded in Epic 5.
-
 ```bash
-# Backend tests
-cd todo-backend && uv run pytest
+# Backend tests with coverage report
+make test-backend
 
 # Frontend unit tests
-cd todo-frontend && npm run test:unit
+make test-frontend
 
 # E2E tests (Playwright — requires running stack)
 make test-e2e
@@ -102,8 +100,44 @@ make test-e2e
 make test-all
 ```
 
+## Makefile Command Map
+
+The README treats `Makefile` as the source of truth for exact recipe syntax.  
+Use `make help` to list targets; use the map below for intent.
+
+| Purpose | Make target |
+|---------|-------------|
+| First-time setup | `make setup` |
+| Start stack (foreground) | `make up` |
+| Start stack (detached) | `make up-d` |
+| Stop stack (keep data) | `make down` |
+| Stop stack (delete data) | `make nuke` |
+| Rebuild and run | `make build` |
+| Backend tests + coverage | `make test-backend` |
+| Frontend unit tests | `make test-frontend` |
+| E2E tests | `make test-e2e` |
+| Full test pass | `make test-all` |
+| Backend quality checks | `make lint-backend` |
+| Frontend quality checks | `make lint-frontend` |
+| Follow service logs | `make logs` |
+
 ## API Documentation
 
 Set `ENABLE_DOCS=true` in your `.env` file to enable the interactive Swagger UI at `http://localhost/docs`.
 
-> **Placeholder** — Full API documentation coming in Epic 5.
+OpenAPI is served by FastAPI and reflects the live `/api/v1` routes. In production-style runs, docs can be disabled by setting `ENABLE_DOCS=false`.
+
+## BMAD Methodology
+
+This repository was planned and implemented through BMAD artifacts in this chain:
+
+`product brief -> PRD -> architecture -> UX design -> epics/stories -> implementation artifacts`
+
+Key generated artifacts:
+
+- Product brief: [`_bmad-output/planning-artifacts/product-brief-leapsome-bmad-todo.md`](_bmad-output/planning-artifacts/product-brief-leapsome-bmad-todo.md)
+- PRD: [`_bmad-output/planning-artifacts/prd.md`](_bmad-output/planning-artifacts/prd.md)
+- Architecture: [`_bmad-output/planning-artifacts/architecture.md`](_bmad-output/planning-artifacts/architecture.md)
+- UX design: [`_bmad-output/planning-artifacts/ux-design-specification.md`](_bmad-output/planning-artifacts/ux-design-specification.md)
+- Epics and stories: [`_bmad-output/planning-artifacts/epics.md`](_bmad-output/planning-artifacts/epics.md)
+- Implementation stories: [`_bmad-output/implementation-artifacts/`](_bmad-output/implementation-artifacts/)
