@@ -81,7 +81,7 @@ development_status:
   # Epic 5: End-to-End Quality Assurance & Documentation
   epic-5: in-progress
   5-1-playwright-end-to-end-test-suite: done
-  5-2-ai-assisted-security-review: backlog
+  5-2-ai-assisted-security-review: done
   5-3-full-readme-and-documentation-completion: backlog
   5-4-ai-integration-log: backlog
   epic-5-retrospective: optional
