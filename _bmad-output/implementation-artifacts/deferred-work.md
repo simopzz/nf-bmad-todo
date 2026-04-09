@@ -46,3 +46,8 @@
 - `TodoListResponse` publicly exported from `types/todo.ts` — violates "internal to api.ts" guardrail; no consumer currently imports it so no active harm, but move to api.ts internals in a follow-up
 - Race condition in concurrent `fetchTodos` calls — no AbortController or sequence guard; stale responses can overwrite newer data; inherent tradeoff of pessimistic-refetch pattern; out of scope for Story 3.2
 - `getErrorMessage({ detail: null })` returns the string `"null"` to users — backend contract returns strings not null but this is a defensive hardening gap; address in a later story
+
+## Deferred from: code review of 5-2-ai-assisted-security-review (2026-04-09)
+
+- Backend test coverage at 73% not cross-referenced against security-relevant code paths — pre-existing quality gap; specific uncovered branches in reviewed files not mapped to security impact
+- No-finding entries in ai-review.md all assigned severity "low" rather than a neutral marker (e.g., `n/a`) — minor documentation style issue; "low" implies a minor issue was found
