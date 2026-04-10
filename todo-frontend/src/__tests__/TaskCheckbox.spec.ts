@@ -4,10 +4,11 @@ import { describe, expect, it } from 'vitest'
 import TaskCheckbox from '@/components/todos/TaskCheckbox.vue'
 
 describe('components/todos/TaskCheckbox', () => {
-  function mountCheckbox(props: { completed?: boolean } = {}) {
+  function mountCheckbox(props: { completed?: boolean; disabled?: boolean } = {}) {
     return mount(TaskCheckbox, {
       props: {
         completed: props.completed ?? false,
+        disabled: props.disabled ?? false,
       },
     })
   }
@@ -107,5 +108,19 @@ describe('components/todos/TaskCheckbox', () => {
     const wrapper = mountCheckbox()
     const input = wrapper.find('input[type="checkbox"]')
     expect(input.attributes('aria-label')).toBe('Toggle task completion')
+  })
+
+  it('disables the native checkbox when disabled is true', () => {
+    const wrapper = mountCheckbox({ disabled: true })
+    const input = wrapper.find('input[type="checkbox"]')
+    expect(input.attributes('disabled')).toBeDefined()
+  })
+
+  it('does not emit toggle when disabled', async () => {
+    const wrapper = mountCheckbox({ disabled: true })
+    const input = wrapper.find('input[type="checkbox"]')
+    await input.trigger('change')
+    await input.trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('toggle')).toBeUndefined()
   })
 })

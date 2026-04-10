@@ -16,6 +16,7 @@ function mountItem(
   overrides: Partial<{
     todo: Todo
     isEditing: boolean
+    isPending: boolean
     mutationFailed: boolean
     onCommitEdit: (id: number, title: string) => Promise<boolean>
   }> = {},
@@ -24,6 +25,7 @@ function mountItem(
     props: {
       todo: overrides.todo ?? sampleTodo,
       isEditing: overrides.isEditing ?? false,
+      isPending: overrides.isPending ?? false,
       mutationFailed: overrides.mutationFailed ?? false,
       ...(overrides.onCommitEdit ? { onCommitEdit: overrides.onCommitEdit } : {}),
     },
@@ -150,6 +152,15 @@ describe('components/todos/TodoItem', () => {
     const wrapper = mountItem({ isEditing: true })
     const input = wrapper.find('[data-testid="edit-input"]')
     expect(input.attributes('aria-label')).toBe('Edit task')
+  })
+
+  it('keeps inline edit layout constrained to avoid trailing action drift on narrow screens', () => {
+    const wrapper = mountItem({ isEditing: true })
+    const input = wrapper.find('[data-testid="edit-input"]')
+    const deleteBtn = wrapper.find('[data-testid="delete-btn"]')
+
+    expect(input.classes()).toContain('min-w-0')
+    expect(deleteBtn.classes()).toContain('shrink-0')
   })
 
   it('delete button has tabindex="-1" at rest (not hovered)', () => {
@@ -396,5 +407,26 @@ describe('components/todos/TodoItem', () => {
     // We validate indirectly by ensuring the component works without any API mocking.
     const wrapper = mountItem()
     expect(wrapper.exists()).toBe(true)
+  })
+
+  it('sets aria-busy and disables controls while pending', () => {
+    const wrapper = mountItem({ isPending: true })
+    const row = wrapper.find('[data-testid="todo-row"]')
+    const deleteBtn = wrapper.find('[data-testid="delete-btn"]')
+    const checkbox = wrapper.find('input[type="checkbox"]')
+
+    expect(row.attributes('aria-busy')).toBe('true')
+    expect(deleteBtn.attributes('disabled')).toBeDefined()
+    expect(checkbox.attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[role="status"]').text()).toContain('Saving task changes')
+  })
+
+  it('does not emit toggleComplete or delete while pending', async () => {
+    const wrapper = mountItem({ isPending: true })
+    await wrapper.findComponent({ name: 'TaskCheckbox' }).vm.$emit('toggle')
+    await wrapper.find('[data-testid="delete-btn"]').trigger('click')
+
+    expect(wrapper.emitted('toggleComplete')).toBeUndefined()
+    expect(wrapper.emitted('delete')).toBeUndefined()
   })
 })

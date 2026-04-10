@@ -1,34 +1,52 @@
 <script setup lang="ts">
 const props = defineProps<{
   completed: boolean
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
   toggle: []
 }>()
+
+function emitToggle() {
+  if (props.disabled) {
+    return
+  }
+  emit('toggle')
+}
+
 function handleCheckboxKeydown(event: KeyboardEvent) {
+  if (props.disabled) {
+    return
+  }
   if (event.key === 'Enter') {
     event.preventDefault()
-    emit('toggle')
+    emitToggle()
   }
 }
 
 </script>
 
 <template>
-  <label class="group flex items-center justify-center p-[13px] cursor-pointer">
+  <label
+    class="group flex items-center justify-center p-[13px]"
+    :class="props.disabled ? 'cursor-not-allowed' : 'cursor-pointer'"
+  >
     <input
       type="checkbox"
       :checked="props.completed"
+      :disabled="props.disabled"
       aria-label="Toggle task completion"
       class="peer sr-only"
-      @change="emit('toggle')"
+      @change="emitToggle"
       @keydown="handleCheckboxKeydown"
     />
     <span
       class="peer-focus-visible:ring-2 peer-focus-visible:ring-secondary peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-surface peer-focus-visible:rounded-full flex h-[18px] w-[18px] items-center justify-center rounded-full border-[1.5px] transition-all duration-200 ease-out group-hover:border-secondary"
       :class="
-        props.completed
+        props.disabled
+          ? 'border-outline-variant/50 bg-transparent'
+          : props.completed
           ? 'border-primary bg-primary shadow-[inset_0_0_0_2px_rgba(12,14,20,0.4)]'
           : 'border-outline-variant bg-transparent'
       "

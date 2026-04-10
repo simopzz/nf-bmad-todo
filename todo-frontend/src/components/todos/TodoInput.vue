@@ -21,14 +21,18 @@ async function handleSubmit() {
   if (isSubmitting.value || !inputTitle.value.trim()) return
   mutationError.value = null
   isSubmitting.value = true
+  let created = false
   try {
     await props.createTodo(inputTitle.value)
     inputTitle.value = ''
-    inputRef.value?.focus()
+    created = true
   } catch (e) {
     mutationError.value = getErrorMessage(e)
   } finally {
     isSubmitting.value = false
+    if (created) {
+      inputRef.value?.focus()
+    }
   }
 }
 
@@ -72,6 +76,7 @@ watchEffect(() => {
       type="text"
       role="textbox"
       aria-label="Add a task"
+      :aria-busy="isSubmitting ? 'true' : undefined"
       placeholder="What needs doing? Press Enter to add…"
       class="w-full bg-transparent px-0 py-1 font-body text-[1.5rem] font-medium text-on-surface outline-none transition-all duration-300 ease-out placeholder:text-on-surface-variant/40"
       :class="
@@ -83,6 +88,14 @@ watchEffect(() => {
       @focus="handleFocus"
       @blur="handleBlur"
     />
+    <p
+      v-if="isSubmitting"
+      role="status"
+      aria-live="polite"
+      class="mt-2 text-sm text-on-surface-variant"
+    >
+      Adding task…
+    </p>
     <p
       v-if="mutationError"
       class="mt-2 text-sm text-red-300"

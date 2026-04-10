@@ -10,8 +10,8 @@
 ## Summary
 
 - Violations: **0**
-- Passes: 17
-- Incomplete (needs manual review): 1
+- Passes: 21
+- Incomplete (needs manual review): 0
 
 ## WCAG AA Result
 

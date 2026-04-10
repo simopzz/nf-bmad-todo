@@ -145,9 +145,10 @@ describe('components/todos/TodoInput', () => {
     await input.trigger('focus')
     await input.setValue('New task')
     await input.trigger('keydown', { key: 'Enter' })
-    await nextTick()
-
-    expect(document.activeElement).toBe(input.element)
+    await vi.waitFor(() => {
+      const refreshedInput = wrapper.find('input')
+      expect(document.activeElement?.isSameNode(refreshedInput.element)).toBe(true)
+    })
   })
 
   it('has correct accessibility attributes', () => {
@@ -177,11 +178,14 @@ describe('components/todos/TodoInput', () => {
     await nextTick()
 
     expect(createTodoMock).toHaveBeenCalledTimes(1)
+    expect(input.attributes('aria-busy')).toBe('true')
+    expect(wrapper.find('[role="status"]').text()).toContain('Adding task')
 
     resolveCreate?.()
     await nextTick()
     await nextTick()
 
     expect((input.element as HTMLInputElement).value).toBe('')
+    expect(input.attributes('aria-busy')).toBeUndefined()
   })
 })

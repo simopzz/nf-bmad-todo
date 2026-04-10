@@ -242,6 +242,49 @@ describe('components/todos/TodoList', () => {
     expect(error.text()).toContain('Cannot update title')
   })
 
+  it('marks list busy while a row mutation is pending', async () => {
+    let resolveUpdate: (() => void) | undefined
+    const updateTodo = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveUpdate = resolve
+        }),
+    )
+    const wrapper = mountList({ updateTodo })
+    const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
+
+    await firstItem.vm.$emit('toggleComplete', 1, true)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('ul').attributes('aria-busy')).toBe('true')
+
+    resolveUpdate?.()
+    await flushPromises()
+
+    expect(wrapper.find('ul').attributes('aria-busy')).toBeUndefined()
+  })
+
+  it('prevents duplicate toggle requests while the same row is pending', async () => {
+    let resolveUpdate: (() => void) | undefined
+    const updateTodo = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveUpdate = resolve
+        }),
+    )
+    const wrapper = mountList({ updateTodo })
+    const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
+
+    await firstItem.vm.$emit('toggleComplete', 1, true)
+    await firstItem.vm.$emit('toggleComplete', 1, true)
+
+    expect(updateTodo).toHaveBeenCalledTimes(1)
+    expect(firstItem.props('isPending')).toBe(true)
+
+    resolveUpdate?.()
+    await flushPromises()
+  })
+
   // --- Empty list ---
 
   it('renders no list items when todos is empty', () => {
