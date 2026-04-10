@@ -9,6 +9,7 @@ const props = defineProps<{
   todos: Todo[]
   updateTodo: (id: number, patch: TodoUpdate) => Promise<void>
   deleteTodo: (id: number) => Promise<void>
+  focusFadeActive?: boolean
 }>()
 
 const editingId = ref<number | null>(null)
@@ -33,6 +34,9 @@ function flashFailedRow(id: number) {
 }
 
 function handleEditStart(id: number) {
+  if (props.focusFadeActive) {
+    return
+  }
   editingId.value = id
 }
 
@@ -41,6 +45,9 @@ function handleEditEnd() {
 }
 
 async function handleToggleComplete(id: number, completed: boolean) {
+  if (props.focusFadeActive) {
+    return
+  }
   mutationError.value = null
   try {
     await props.updateTodo(id, { completed })
@@ -51,6 +58,9 @@ async function handleToggleComplete(id: number, completed: boolean) {
 }
 
 async function handleDelete(id: number) {
+  if (props.focusFadeActive) {
+    return
+  }
   mutationError.value = null
   try {
     await props.deleteTodo(id)
@@ -61,6 +71,9 @@ async function handleDelete(id: number) {
 }
 
 async function handleCommitEdit(id: number, title: string): Promise<boolean> {
+  if (props.focusFadeActive) {
+    return false
+  }
   mutationError.value = null
   try {
     await props.updateTodo(id, { title })
@@ -78,8 +91,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="space-y-2">
-    <ul aria-live="polite" class="space-y-6" style="padding-bottom: env(safe-area-inset-bottom, 0px)">
+  <div class="space-y-4">
+    <ul
+      aria-live="polite"
+      class="space-y-10 transition-opacity duration-300 ease-out"
+      :class="props.focusFadeActive ? 'opacity-20' : 'opacity-100'"
+      :inert="props.focusFadeActive || undefined"
+      style="padding-bottom: env(safe-area-inset-bottom, 0px)"
+    >
       <li v-for="todo in todos" :key="todo.id">
         <TodoItem
           :todo="todo"
@@ -96,7 +115,7 @@ onBeforeUnmount(() => {
     <p
       v-if="mutationError"
       role="alert"
-      class="px-2 text-sm text-red-500"
+      class="rounded bg-red-950/50 px-3 py-2 text-sm text-red-200"
     >
       {{ mutationError }}
     </p>

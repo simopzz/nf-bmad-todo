@@ -110,7 +110,7 @@ This is Story 5.1 — the first story in Epic 5 (End-to-End Quality Assurance & 
 
 **Do NOT** add any Vue component changes — the frontend is complete. This story touches only `e2e/todos.spec.ts` and `Makefile`. Do NOT modify `e2e/accessibility.spec.ts`.
 
-**Do NOT** attempt to implement Story 5.2, 5.3, or 5.4 work here (security review, README, AI log).
+**Do NOT** attempt to implement Story 5.2 or 5.3 work here (security review, README).
 
 ### Current Codebase State
 

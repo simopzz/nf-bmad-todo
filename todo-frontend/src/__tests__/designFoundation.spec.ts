@@ -42,16 +42,16 @@ describe('Story 3.1 design foundation', () => {
     const colors = module.default?.theme?.extend?.colors
     const fonts = module.default?.theme?.extend?.fontFamily
 
-    expect(colors?.brand?.emerald).toBe('#006C4A')
-    expect(colors?.['primary-container']).toBe('#1E293B')
-    expect(colors?.secondary).toBe('#006C4A')
-    expect(colors?.surface).toBe('#F7F9FB')
-    expect(colors?.['surface-low']).toBe('#F2F4F6')
-    expect(colors?.['surface-lowest']).toBe('#FFFFFF')
-    expect(colors?.['surface-highest']).toBeTypeOf('string')
-    expect(colors?.['outline-variant']).toBeTypeOf('string')
-    expect(fonts?.display).toEqual(['Plus Jakarta Sans', 'sans-serif'])
-    expect(fonts?.body).toEqual(['Inter', 'sans-serif'])
+    expect(colors?.primary).toBe('#c6c6c6')
+    expect(colors?.['primary-container']).toBe('#1A1F2D')
+    expect(colors?.secondary).toBe('#c6c6c6')
+    expect(colors?.surface).toBe('#0c0e14')
+    expect(colors?.['surface-low']).toBe('#10131b')
+    expect(colors?.['surface-lowest']).toBe('#000000')
+    expect(colors?.['surface-highest']).toBe('#1a1f2d')
+    expect(colors?.['outline-variant']).toBe('#41485a')
+    expect(fonts?.display).toEqual(['Manrope', 'sans-serif'])
+    expect(fonts?.body).toEqual(['Manrope', 'sans-serif'])
   })
 
   it('loads Google Fonts before the Vite entry point', () => {
@@ -60,7 +60,7 @@ describe('Story 3.1 design foundation', () => {
     const preconnectGoogleApis = '<link rel="preconnect" href="https://fonts.googleapis.com">'
     const preconnectGoogleStatic = '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
     const stylesheetLink =
-      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">'
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">'
     const scriptTag = '<script type="module" src="/src/main.ts"></script>'
 
     expect(indexHtml).toContain(preconnectGoogleApis)

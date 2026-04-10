@@ -7,6 +7,9 @@ const props = defineProps<{
   createTodo: (title: string) => Promise<void>
   todosEmpty: boolean
 }>()
+const emit = defineEmits<{
+  focusFade: [active: boolean]
+}>()
 
 const inputTitle = ref('')
 const mutationError = ref<string | null>(null)
@@ -41,6 +44,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 function handleBlur() {
   isFocused.value = false
+  emit('focusFade', false)
   inputTitle.value = ''
   mutationError.value = null
 }
@@ -54,10 +58,14 @@ watchEffect(() => {
     inputRef.value?.focus()
   }
 })
+
+watchEffect(() => {
+  emit('focusFade', isFocused.value && inputTitle.value.trim().length > 0)
+})
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full rounded bg-surface-lowest px-4 py-3 transition-all duration-300 focus-within:ring-2 focus-within:ring-secondary focus-within:ring-offset-1 focus-within:ring-offset-surface">
     <input
       ref="inputRef"
       v-model="inputTitle"
@@ -65,11 +73,11 @@ watchEffect(() => {
       role="textbox"
       aria-label="Add a task"
       placeholder="What needs doing? Press Enter to add…"
-      class="w-full rounded-lg px-4 py-3 font-body text-sm text-primary-container outline-none transition-colors duration-150"
+      class="w-full bg-transparent px-0 py-1 font-body text-[1.5rem] font-medium text-on-surface outline-none transition-all duration-300 ease-out placeholder:text-on-surface-variant/40"
       :class="
         isFocused
-          ? 'border-l-2 border-secondary bg-surface-lowest'
-          : 'bg-surface-low'
+          ? 'font-bold'
+          : 'font-medium'
       "
       @keydown="handleKeydown"
       @focus="handleFocus"
@@ -77,7 +85,7 @@ watchEffect(() => {
     />
     <p
       v-if="mutationError"
-      class="mt-1 px-4 text-sm text-red-500"
+      class="mt-2 text-sm text-red-300"
       role="alert"
     >
       {{ mutationError }}

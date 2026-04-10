@@ -26,11 +26,15 @@ function handleCheckboxKeydown(event: KeyboardEvent) {
       @keydown="handleCheckboxKeydown"
     />
     <span
-      class="peer-focus-visible:ring-2 peer-focus-visible:ring-secondary peer-focus-visible:ring-offset-1 peer-focus-visible:rounded-sm flex h-[18px] w-[18px] items-center justify-center rounded-md border-[1.5px] transition-all duration-150 ease-in-out group-hover:border-primary-container"
-      :class="props.completed ? 'border-secondary bg-secondary' : 'border-outline-variant bg-transparent'"
+      class="peer-focus-visible:ring-2 peer-focus-visible:ring-secondary peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-surface peer-focus-visible:rounded-full flex h-[18px] w-[18px] items-center justify-center rounded-full border-[1.5px] transition-all duration-200 ease-out group-hover:border-secondary"
+      :class="
+        props.completed
+          ? 'border-primary bg-primary shadow-[inset_0_0_0_2px_rgba(12,14,20,0.4)]'
+          : 'border-outline-variant bg-transparent'
+      "
     >
       <svg
-        class="h-3 w-3 text-white transition-all duration-150 ease-in-out"
+        class="h-3 w-3 text-surface transition-all duration-200 ease-out"
         :class="props.completed ? 'scale-100 opacity-100' : 'scale-75 opacity-0'"
         viewBox="0 0 12 12"
         fill="none"

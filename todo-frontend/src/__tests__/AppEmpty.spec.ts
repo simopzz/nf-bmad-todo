@@ -54,9 +54,9 @@ describe('components/todos/AppEmpty', () => {
     expect(body.classes()).toContain('font-body')
   })
 
-  it('is centered', () => {
+  it('uses editorial left-aligned layout', () => {
     const wrapper = mountEmpty('blank')
-    expect(wrapper.find('[data-testid="empty-container"]').classes()).toContain('text-center')
+    expect(wrapper.find('[data-testid="empty-container"]').classes()).toContain('text-left')
   })
 
   it('has role="status" on the container for screen reader announcements', () => {

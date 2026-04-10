@@ -91,16 +91,17 @@ describe('components/todos/TodoInput', () => {
 
     await input.trigger('focus')
 
-    expect(input.classes()).toContain('bg-surface-lowest')
-    expect(input.classes()).toContain('border-l-2')
+    expect(input.classes()).toContain('bg-transparent')
+    expect(input.classes()).toContain('font-bold')
   })
 
   it('applies rest styling classes when not focused', () => {
     const wrapper = mountInput()
     const input = wrapper.find('input')
 
-    expect(input.classes()).toContain('bg-surface-low')
-    expect(input.classes()).not.toContain('border-l-2')
+    expect(input.classes()).toContain('bg-transparent')
+    expect(input.classes()).toContain('font-medium')
+    expect(input.classes()).not.toContain('font-bold')
   })
 
   it('displays mutation error and preserves input text on createTodo rejection', async () => {
