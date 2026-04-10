@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref } from 'vue'
 
 import TodoItem from '@/components/todos/TodoItem.vue'
 import { getErrorMessage } from '@/services/api'
@@ -15,7 +15,9 @@ const props = defineProps<{
 const editingId = ref<number | null>(null)
 const mutationError = ref<string | null>(null)
 const failedRowIds = reactive(new Set<number>())
+const pendingRowIds = reactive(new Set<number>())
 const failedRowFlashTimers = new Map<number, ReturnType<typeof setTimeout>>()
+const hasPendingRows = computed(() => pendingRowIds.size > 0)
 
 function flashFailedRow(id: number) {
   failedRowIds.add(id)
@@ -45,28 +47,34 @@ function handleEditEnd() {
 }
 
 async function handleToggleComplete(id: number, completed: boolean) {
-  if (props.focusFadeActive) {
+  if (props.focusFadeActive || pendingRowIds.has(id)) {
     return
   }
   mutationError.value = null
+  pendingRowIds.add(id)
   try {
     await props.updateTodo(id, { completed })
   } catch (e) {
     mutationError.value = getErrorMessage(e)
     flashFailedRow(id)
+  } finally {
+    pendingRowIds.delete(id)
   }
 }
 
 async function handleDelete(id: number) {
-  if (props.focusFadeActive) {
+  if (props.focusFadeActive || pendingRowIds.has(id)) {
     return
   }
   mutationError.value = null
+  pendingRowIds.add(id)
   try {
     await props.deleteTodo(id)
   } catch (e) {
     mutationError.value = getErrorMessage(e)
     flashFailedRow(id)
+  } finally {
+    pendingRowIds.delete(id)
   }
 }
 
@@ -94,6 +102,7 @@ onBeforeUnmount(() => {
   <div class="space-y-4">
     <ul
       aria-live="polite"
+      :aria-busy="hasPendingRows ? 'true' : undefined"
       class="space-y-10 transition-opacity duration-300 ease-out"
       :class="props.focusFadeActive ? 'opacity-20' : 'opacity-100'"
       :inert="props.focusFadeActive || undefined"
@@ -103,6 +112,7 @@ onBeforeUnmount(() => {
         <TodoItem
           :todo="todo"
           :is-editing="editingId === todo.id"
+          :is-pending="pendingRowIds.has(todo.id)"
           :mutation-failed="failedRowIds.has(todo.id)"
           :on-commit-edit="handleCommitEdit"
           @edit-start="handleEditStart"
