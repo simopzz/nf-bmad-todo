@@ -150,7 +150,6 @@ FR34: Epic 1 — Conventional commit pre-commit hook enforced
 FR35: Epic 2 — Backend unit + integration tests ≥70% coverage (pytest + pytest-cov)
 FR36: Epic 5 — E2E Playwright tests ≥5 scenarios (full CRUD + error recovery)
 FR37: Epic 5 — README enables zero-prior-knowledge setup, run, and test
-Additional (task.md): Epic 5 Story 5.4 — AI integration log documenting agent usage, MCP usage, test generation, debugging, and limitations
 ```
 
 ## Epic List
@@ -691,24 +690,3 @@ So that I can clone, run, and fully verify the application without asking anyone
 **And** a developer unfamiliar with the codebase completes all README steps without needing additional guidance (NFR15)
 **And** the README includes a "BMAD Methodology" section (or links to `_bmad-output/BMAD-PROCESS.md`) that explains the artifact chain used: product brief → PRD → architecture → UX design → epics/stories → implementation, satisfying the assignment deliverable "Documentation of how BMAD guided the implementation"
 
-### Story 5.4: AI Integration Log
-
-As a developer documenting the BMAD methodology exercise,
-I want a maintained log of how AI tools were used throughout the project,
-So that the methodology is traceable and evaluators can assess AI-assisted development decisions.
-
-**Acceptance Criteria:**
-
-**Given** the project is complete
-**When** `_bmad-output/ai-integration-log.md` is reviewed
-**Then** it documents all five required categories from the assignment:
-- **Agent Usage:** which tasks were completed with AI assistance and which prompts worked best
-- **MCP Server Usage:** which MCP servers were used and how they helped — including documented tool substitutions: `httpx` integration tests used in place of Postman MCP; Playwright timing assertions used in place of Chrome DevTools MCP performance profiling; rationale documented for each substitution
-- **Test Generation:** how AI assisted in generating test cases and what it missed or got wrong
-- **Debugging with AI:** specific cases where AI helped identify or resolve issues during development
-- **Limitations:** what AI could not do well and where human expertise was critical to the outcome
-
-**And** the log is populated incrementally throughout development — at minimum one entry added at the conclusion of each epic; it is not written retrospectively after all code is complete
-**And** entries reference specific story numbers where relevant (e.g. "Story 2.3: AI generated initial endpoint stubs; human review caught missing bare-except guard")
-**And** the log is readable by an evaluator with no prior knowledge of the codebase — no assumed context
-**And** the file is referenced from the README so evaluators can find it without searching the repository

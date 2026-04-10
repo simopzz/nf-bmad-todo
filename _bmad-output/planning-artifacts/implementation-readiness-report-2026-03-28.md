@@ -252,7 +252,7 @@ All 14 UX Design Requirements (UX-DR1–UX-DR14) from the epics requirements inv
 | Epic 2: Backend Task API & Data Persistence | Todos durably persisted, full REST API operational, ≥70% test coverage | Partial — testable via HTTP but no UI yet | ✅ Acceptable; API value can be verified independently |
 | Epic 3: Core Frontend Task Management | Alex (Journey 1) can create, view, edit, complete, delete todos via polished UI | Strong user value ✅ | ✅ Clear, user-facing, end-to-end |
 | Epic 4: Resilient UX, Accessibility & Responsive | Alex (Journey 2) can recover from errors, operate keyboard-only, WCAG AA | Strong user value ✅ | ✅ Addresses full error recovery and accessibility |
-| Epic 5: E2E QA & Documentation | Full stack verified E2E; security reviewed; README complete; AI log | Mixed — QA/evaluator value | ⚠️ Story 5.4 (AI integration log) is evaluator-only, not standard user value |
+| Epic 5: E2E QA & Documentation | Full stack verified E2E; security reviewed; README complete | QA/evaluator value | ✅ Verified end-to-end |
 
 #### Epic Independence Validation
 
@@ -313,11 +313,7 @@ No circular dependencies. Sequential ordering is valid.
 - After Story 3.3 but before Story 4.2, submitting an empty input would attempt an API call (which returns HTTP 422) — Story 3.2 API layer throws on non-2xx, so the error would surface but without the intended UX polish.
 - **Verdict:** Documented and acceptable. Story 4.2 AC explicitly covers this case. Low risk in sequential implementation.
 
-**Concern m4 — Story 5.4 (AI integration log) is evaluator-only deliverable**
-- Story 5.4 is a BMAD methodology exercise deliverable for human evaluators, not standard user or developer value.
-- **Verdict:** Valid in this project's context (BMAD methodology demonstration). Would not belong in a standard commercial epic breakdown.
-
-**Concern m5 — Backend tests written after implementation (Story 2.5)**
+**Concern m4 — Backend tests written after implementation (Story 2.5)**
 - Backend unit/integration tests are written in Story 2.5, after the implementation stories (2.1–2.4). This is an implementation-then-test approach rather than TDD.
 - **Verdict:** Suboptimal from a TDD purist perspective, but consistent with the story structure. Story 2.5 ACs are comprehensive and cover all endpoint scenarios. Not a blocking issue.
 

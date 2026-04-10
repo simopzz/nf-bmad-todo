@@ -20,17 +20,25 @@ async function handleRetry() {
 </script>
 
 <template>
-  <div role="status" data-testid="load-error" class="flex flex-col items-center py-12 text-center">
-    <span class="mb-4 text-4xl" aria-hidden="true">&#9888;</span>
-    <h2 class="font-display text-lg font-semibold text-primary-container">
+  <div
+    role="status"
+    data-testid="load-error"
+    class="flex flex-col items-start rounded bg-surface-low px-6 py-10 text-left"
+  >
+    <span
+      class="mb-5 grid h-12 w-12 place-items-center rounded-full bg-surface-highest text-2xl text-on-surface"
+      aria-hidden="true"
+      >&#9888;</span
+    >
+    <h2 class="font-display text-[2rem] font-semibold leading-tight text-on-surface">
       Couldn't load your tasks
     </h2>
-    <p class="mt-2 max-w-xs font-body text-sm text-primary-container/70">
+    <p class="mt-3 max-w-sm font-body text-sm text-on-surface-variant">
       Something went wrong reaching the server. Check your connection and try again.
     </p>
     <button
       type="button"
-      class="mt-6 rounded-lg bg-gradient-to-r from-primary-container to-primary-container/80 px-6 py-2 font-body text-sm font-medium text-surface-lowest shadow-sm transition-shadow hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+      class="mt-6 rounded bg-primary-container px-6 py-3 font-body text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-on-primary-container transition duration-300 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-60"
       :disabled="retrying"
       @click="void handleRetry()"
     >

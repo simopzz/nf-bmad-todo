@@ -140,7 +140,7 @@ describe('App integration', () => {
     const titles = wrapper.findAll('[data-testid="todo-title"]')
     // Second todo is completed
     expect(titles[1]!.classes()).toContain('line-through')
-    expect(titles[1]!.classes()).toContain('text-on-surface-variant')
+    expect(titles[1]!.classes()).toContain('text-on-tertiary-fixed-variant')
     // First todo is not completed
     expect(titles[0]!.classes()).not.toContain('line-through')
   })

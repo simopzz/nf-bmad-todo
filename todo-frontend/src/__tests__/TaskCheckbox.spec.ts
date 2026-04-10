@@ -44,8 +44,8 @@ describe('components/todos/TaskCheckbox', () => {
   it('has filled state when completed', () => {
     const wrapper = mountCheckbox({ completed: true })
     const inner = wrapper.find('span')
-    expect(inner.classes()).toContain('bg-secondary')
-    expect(inner.classes()).toContain('border-secondary')
+    expect(inner.classes()).toContain('bg-primary')
+    expect(inner.classes()).toContain('border-primary')
   })
 
   it('has unfilled state when not completed', () => {
@@ -58,7 +58,7 @@ describe('components/todos/TaskCheckbox', () => {
   it('has hover styling class on inner span', () => {
     const wrapper = mountCheckbox()
     const inner = wrapper.find('span')
-    expect(inner.classes()).toContain('group-hover:border-primary-container')
+    expect(inner.classes()).toContain('group-hover:border-secondary')
   })
 
   it('has 44x44px touch target via padding', () => {
@@ -90,11 +90,11 @@ describe('components/todos/TaskCheckbox', () => {
     const icon = wrapper.find('svg')
 
     expect(inner.classes()).toContain('transition-all')
-    expect(inner.classes()).toContain('duration-150')
-    expect(inner.classes()).toContain('ease-in-out')
+    expect(inner.classes()).toContain('duration-200')
+    expect(inner.classes()).toContain('ease-out')
     expect(icon.classes()).toContain('transition-all')
-    expect(icon.classes()).toContain('duration-150')
-    expect(icon.classes()).toContain('ease-in-out')
+    expect(icon.classes()).toContain('duration-200')
+    expect(icon.classes()).toContain('ease-out')
   })
 
   it('native input is visually hidden with sr-only', () => {

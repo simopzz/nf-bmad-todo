@@ -23,6 +23,7 @@ function mountList(
     todos: Todo[]
     updateTodo: (id: number, patch: { title?: string; completed?: boolean }) => Promise<void>
     deleteTodo: (id: number) => Promise<void>
+    focusFadeActive: boolean
   }> = {},
 ) {
   return mount(TodoList, {
@@ -30,6 +31,7 @@ function mountList(
       todos: overrides.todos ?? sampleTodos,
       updateTodo: overrides.updateTodo ?? vi.fn(),
       deleteTodo: overrides.deleteTodo ?? vi.fn(),
+      focusFadeActive: overrides.focusFadeActive,
     },
   })
 }
@@ -110,6 +112,14 @@ describe('components/todos/TodoList', () => {
     expect(updateTodo).toHaveBeenCalledWith(1, { completed: true })
   })
 
+  it('does not call updateTodo when focus fade is active', async () => {
+    const updateTodo = vi.fn()
+    const wrapper = mountList({ updateTodo, focusFadeActive: true })
+    const firstItem = wrapper.findAllComponents({ name: 'TodoItem' })[0]!
+    await firstItem.vm.$emit('toggleComplete', 1, true)
+    expect(updateTodo).not.toHaveBeenCalled()
+  })
+
   it('calls deleteTodo when delete is emitted from a TodoItem', async () => {
     const deleteTodo = vi.fn()
     const wrapper = mountList({ deleteTodo })
@@ -147,13 +157,13 @@ describe('components/todos/TodoList', () => {
       expect(error.text()).toContain('Cannot update todo')
 
       const rows = wrapper.findAll('[data-testid="todo-row"]')
-      expect(rows[0]!.classes()).toContain('border-outline-variant')
-      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[0]!.classes()).toContain('ring-outline-variant/40')
+      expect(rows[1]!.classes()).not.toContain('ring-outline-variant/40')
 
       vi.advanceTimersByTime(1500)
       await flushPromises()
 
-      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[0]!.classes()).not.toContain('ring-outline-variant/40')
     } finally {
       vi.useRealTimers()
     }
@@ -174,13 +184,13 @@ describe('components/todos/TodoList', () => {
       expect(error.text()).toContain('Cannot delete todo')
 
       const rows = wrapper.findAll('[data-testid="todo-row"]')
-      expect(rows[0]!.classes()).toContain('border-outline-variant')
-      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[0]!.classes()).toContain('ring-outline-variant/40')
+      expect(rows[1]!.classes()).not.toContain('ring-outline-variant/40')
 
       vi.advanceTimersByTime(1500)
       await flushPromises()
 
-      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[0]!.classes()).not.toContain('ring-outline-variant/40')
     } finally {
       vi.useRealTimers()
     }
@@ -202,19 +212,19 @@ describe('components/todos/TodoList', () => {
       await flushPromises()
 
       const rows = wrapper.findAll('[data-testid="todo-row"]')
-      expect(rows[0]!.classes()).toContain('border-outline-variant')
-      expect(rows[1]!.classes()).toContain('border-outline-variant')
+      expect(rows[0]!.classes()).toContain('ring-outline-variant/40')
+      expect(rows[1]!.classes()).toContain('ring-outline-variant/40')
 
       vi.advanceTimersByTime(1200)
       await flushPromises()
 
-      expect(rows[0]!.classes()).not.toContain('border-outline-variant')
-      expect(rows[1]!.classes()).toContain('border-outline-variant')
+      expect(rows[0]!.classes()).not.toContain('ring-outline-variant/40')
+      expect(rows[1]!.classes()).toContain('ring-outline-variant/40')
 
       vi.advanceTimersByTime(300)
       await flushPromises()
 
-      expect(rows[1]!.classes()).not.toContain('border-outline-variant')
+      expect(rows[1]!.classes()).not.toContain('ring-outline-variant/40')
     } finally {
       vi.useRealTimers()
     }

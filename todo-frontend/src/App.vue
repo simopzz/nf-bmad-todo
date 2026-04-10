@@ -11,6 +11,7 @@ import { useTodos } from '@/composables/useTodos'
 const todoModel = useTodos()
 
 const lastDeleteWasCompleted = ref(false)
+const focusFadeActive = ref(false)
 
 const hasTodos = computed(() => todoModel.todos.value.length > 0)
 const showSkeleton = computed(
@@ -32,15 +33,17 @@ async function handleDeleteTodo(id: number) {
 </script>
 
 <template>
-  <main class="min-h-screen bg-surface px-4 py-10 font-body text-primary-container sm:px-6">
-    <section class="mx-auto flex max-w-[640px] flex-col gap-6 rounded-xl bg-surface-lowest p-6">
-      <header>
-        <h1 class="font-display text-2xl font-semibold tracking-tight">Todo</h1>
+  <main class="min-h-screen bg-surface px-5 py-14 font-body text-on-surface sm:px-10 sm:py-16">
+    <section class="relative mx-auto flex max-w-[640px] flex-col gap-10 sm:pr-12">
+      <header class="relative">
+        <h1 class="font-display text-5xl font-semibold tracking-tight text-on-surface sm:text-[3.5rem]">Todo</h1>
+        <p class="mt-2 text-[0.875rem] uppercase tracking-[0.14em] text-on-surface-variant">The singular focus</p>
       </header>
 
       <TodoInput
         :create-todo="todoModel.createTodo"
         :todos-empty="!todoModel.loading.value && todoModel.todos.value.length === 0"
+        @focus-fade="focusFadeActive = $event"
       />
 
       <LoadingSkeleton v-if="showSkeleton" />
@@ -55,6 +58,7 @@ async function handleDeleteTodo(id: number) {
         :todos="todoModel.todos.value"
         :update-todo="todoModel.updateTodo"
         :delete-todo="handleDeleteTodo"
+        :focus-fade-active="focusFadeActive"
       />
 
       <AppEmpty

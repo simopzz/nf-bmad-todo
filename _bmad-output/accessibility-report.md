@@ -1,6 +1,6 @@
 # Accessibility Report
 
-**Scan date:** 2026-04-09
+**Scan date:** 2026-04-10
 **Tool:** axe-core via @axe-core/playwright
 **axe-core version:** 4.11.2
 **Target:** http://localhost:80 (Docker Compose production stack)
@@ -10,8 +10,8 @@
 ## Summary
 
 - Violations: **0**
-- Passes: 21
-- Incomplete (needs manual review): 0
+- Passes: 17
+- Incomplete (needs manual review): 1
 
 ## WCAG AA Result
 

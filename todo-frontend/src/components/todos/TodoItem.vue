@@ -141,10 +141,10 @@ onBeforeUnmount(() => {
     ref="rowRef"
     tabindex="-1"
     data-testid="todo-row"
-    class="flex items-center rounded-lg border-[1px] px-2 transition-colors duration-150 ease-in-out focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1"
+    class="group flex items-center rounded px-2 transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:ring-offset-surface"
     :class="[
       isActionVisible ? 'bg-surface-highest' : 'bg-transparent',
-      hasMutationFailed ? 'border-outline-variant' : 'border-transparent',
+      hasMutationFailed ? 'ring-1 ring-outline-variant/40' : '',
     ]"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
@@ -161,8 +161,8 @@ onBeforeUnmount(() => {
       v-if="!isEditing"
       tabindex="0"
       data-testid="todo-title"
-      class="flex-1 cursor-pointer py-3 font-body text-sm focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:rounded-sm"
-      :class="todo.completed ? 'line-through text-on-surface-variant' : 'text-primary-container'"
+      class="flex-1 cursor-pointer py-4 font-display text-[1.5rem] leading-[1.1] transition-colors duration-300 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:ring-offset-surface"
+      :class="todo.completed ? 'line-through text-on-tertiary-fixed-variant' : 'text-on-surface'"
       @click="handleTitleClick"
       @keydown.enter.prevent="handleTitleClick"
     >
@@ -177,7 +177,7 @@ onBeforeUnmount(() => {
       data-testid="edit-input"
       type="text"
       aria-label="Edit task"
-      class="flex-1 rounded-lg border-l-2 border-secondary bg-surface-lowest px-2 py-3 font-body text-sm text-primary-container outline-none"
+      class="flex-1 bg-transparent py-4 font-display text-[1.5rem] font-bold leading-[1.1] text-on-surface outline-none placeholder:text-on-surface-variant/40 ring-1 ring-outline-variant/20"
       @keydown="handleEditKeydown"
       @blur="handleEditBlur"
     />
@@ -187,13 +187,13 @@ onBeforeUnmount(() => {
       type="button"
       data-testid="delete-btn"
       aria-label="Delete task"
-      class="ml-2 flex items-center justify-center p-[14px] transition-opacity duration-150 ease-in-out focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:rounded-sm [@media(hover:none)]:!opacity-100 [@media(hover:none)]:!pointer-events-auto"
+      class="ml-2 flex items-center justify-center rounded p-[14px] text-on-surface-variant transition-all duration-300 ease-out hover:text-on-surface focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-1 focus-visible:ring-offset-surface [@media(hover:none)]:!opacity-100 [@media(hover:none)]:!pointer-events-auto"
       :class="isActionVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
       :tabindex="isActionVisible ? 0 : -1"
       @click="emit('delete', todo.id)"
     >
       <svg
-        class="h-4 w-4 text-primary-container"
+        class="h-4 w-4"
         viewBox="0 0 16 16"
         fill="none"
         stroke="currentColor"

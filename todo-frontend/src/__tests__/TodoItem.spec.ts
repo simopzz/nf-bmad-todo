@@ -202,9 +202,9 @@ describe('components/todos/TodoItem', () => {
     expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('bg-surface-highest')
   })
 
-  it('applies 150ms transition class on the row', () => {
+  it('applies 300ms transition class on the row', () => {
     const wrapper = mountItem()
-    expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('duration-150')
+    expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('duration-300')
   })
 
   it('applies visible focus ring classes on the row', () => {
@@ -215,9 +215,9 @@ describe('components/todos/TodoItem', () => {
     expect(row.classes()).toContain('focus-visible:ring-offset-1')
   })
 
-  it('applies border-outline-variant when mutationFailed prop is true', () => {
+  it('applies ring-outline-variant when mutationFailed prop is true', () => {
     const wrapper = mountItem({ mutationFailed: true })
-    expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+    expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('ring-outline-variant/40')
   })
 
   // --- Completed-state visual treatment ---
@@ -227,7 +227,7 @@ describe('components/todos/TodoItem', () => {
     const wrapper = mountItem({ todo: completedTodo })
     const title = wrapper.find('[data-testid="todo-title"]')
     expect(title.classes()).toContain('line-through')
-    expect(title.classes()).toContain('text-on-surface-variant')
+    expect(title.classes()).toContain('text-on-tertiary-fixed-variant')
   })
 
   it('does not apply line-through when todo is not completed', () => {
@@ -303,7 +303,7 @@ describe('components/todos/TodoItem', () => {
       await flushPromises()
 
       expect(wrapper.emitted('editEnd')).toHaveLength(1)
-      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('ring-outline-variant/40')
 
       await wrapper.setProps({ isEditing: false })
       await wrapper.setProps({ isEditing: true })
@@ -313,7 +313,7 @@ describe('components/todos/TodoItem', () => {
       vi.advanceTimersByTime(1500)
       await flushPromises()
 
-      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('border-outline-variant')
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('ring-outline-variant/40')
     } finally {
       vi.useRealTimers()
     }
@@ -331,7 +331,7 @@ describe('components/todos/TodoItem', () => {
       await flushPromises()
 
       expect(wrapper.emitted('editEnd')).toHaveLength(1)
-      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('border-outline-variant')
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).toContain('ring-outline-variant/40')
 
       await wrapper.setProps({ isEditing: false })
       await wrapper.setProps({ isEditing: true })
@@ -341,7 +341,7 @@ describe('components/todos/TodoItem', () => {
       vi.advanceTimersByTime(1500)
       await flushPromises()
 
-      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('border-outline-variant')
+      expect(wrapper.find('[data-testid="todo-row"]').classes()).not.toContain('ring-outline-variant/40')
     } finally {
       vi.useRealTimers()
     }
